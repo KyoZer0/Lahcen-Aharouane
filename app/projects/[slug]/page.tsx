@@ -85,13 +85,6 @@ const projects: Project[] = [
     technologies: ["React", "Node.js", "MongoDB", "Express"],
   },
 ];
-
-export async function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
-}
-
 export default function ProjectPage({ params }: { params: { slug: string } }) {
   const project = projects.find((p) => p.slug === params.slug);
 
@@ -102,7 +95,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   return (
     <>
       <Nav />
-      <article className="px-10 py-8">
+      <article className="px-10 md:px-20 py-8">
         <Button
           variant="ghost"
           asChild
@@ -140,12 +133,15 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Project Overview</h2>
-          <p className="text-lg">{project.description}</p>
+          <p className="ml-6 text-lg">{project.description}</p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Detailed Description</h2>
-          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: project.fullDescription }} />
+          <div 
+            className="ml-6 prose dark:prose-invert md:max-w-6xl md:text-justify text-lg"
+            dangerouslySetInnerHTML={{ __html: project.fullDescription.replace(/\n/g, '<br />') }}
+          />
         </section>
 
         {project.liveUrl && (
