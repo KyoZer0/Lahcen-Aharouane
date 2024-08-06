@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
   { name: "ABOUT", href: "/about" },
-  { name: "WORK", href: "/work" },
+  { name: "WORK", href: "/projects" },
   { name: "F.A.Q", href: "/faq" },
 ];
 
@@ -95,11 +95,13 @@ const Nav = () => {
         type: "spring",
         stiffness: 100,
       }}
-      className="py-6 px-4 sm:px-8 flex items-center justify-between relative"
+      className="py-6 px-4 sm:px-8 flex items-center justify-between "
     >
-      <h1 className="text-xl z-20">
-        <span className="text-primary-col font-black">AHAROUANE</span>.dev
-      </h1>
+      <Link href={'/'}>
+        <h1 className="text-xl z-20">
+          <span className="text-primary-col font-black">AHAROUANE</span>.dev
+        </h1>
+      </Link>
 
       {/* Hamburger menu */}
       <button

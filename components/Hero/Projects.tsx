@@ -1,7 +1,9 @@
 import React from "react";
 import { motion, useInView } from "framer-motion";
+import Link from "next/link";
 
 interface Project {
+  url: string
   name: string;
   description: string;
   projectNumber: string;
@@ -9,18 +11,21 @@ interface Project {
 
 const projects: Project[] = [
   {
+    url: "projects/aiais",
     name: "AIAIS",
     description:
       "A comprehensive website for Association Initiative Al Amal pour l'Intégration Sociale, focused on promoting social integration and community support.",
     projectNumber: "P.01",
   },
   {
+    url: "projects/centre-al-amal",
     name: "Centre Al Amal",
     description:
       "An advanced center management platform designed to facilitate interactions between students, teachers, and administrators, streamlining educational operations and communication.",
     projectNumber: "P.02",
   },
   {
+    url: "projects/arcane-studios",
     name: "Arcane Studios",
     description:
       "A platform that connects clients with freelancers for a wide range of services, fostering a collaborative environment for professional growth.",
@@ -86,32 +91,35 @@ function Projects() {
                 <p className="text-sm text-gray-500 mt-2 sm:mt-0">
                   {project.description}
                 </p>
-                <motion.button
-                  className="flex items-center gap-2 bg-primary-col text-black py-2 px-4 rounded hover:scale-105 hover:bg-transparent hover:border border-black transition-all duration-500 mt-4 sm:mt-0"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Visit{" "}
-                  <span className="w-4 h-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="-rotate-45"
-                    >
-                      <line x1="0" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  </span>
-                </motion.button>
+                <Link href={project.url}>
+                
+                  <motion.button
+                    className="flex items-center gap-2 bg-primary-col text-black py-2 px-4 rounded hover:scale-105 hover:bg-transparent hover:border border-black transition-all duration-500 mt-4 sm:mt-0"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Visit{" "}
+                    <span className="w-4 h-4">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="-rotate-45"
+                      >
+                        <line x1="0" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </span>
+                  </motion.button>
+                </Link>
               </motion.div>
             );
         })}
-        <p className="mt-6 text-center underline underline-offset-2">see more &rarr;</p>
+        <a href="/projects" className="mt-6 text-center underline underline-offset-2">see more &rarr;</a>
         </div>
       </motion.div>
     </section>

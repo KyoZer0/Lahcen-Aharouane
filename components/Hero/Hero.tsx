@@ -3,18 +3,27 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Projects from "./Projects";
 import Link from "next/link";
+import { AnimatedGradient } from "@/app/projects/Animatedgradient";
 
 function Hero() {
   return (
     <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+      >
+        <AnimatedGradient />
+      </motion.div>
+
       <section className="min-h-screen relative">
-        <Image
+        {/* <Image
           src="/moon.jpg"
           alt="Moon background"
           layout="fill"
           objectFit="cover"
           className="opacity-50 blur-xl select-none"
-        />
+        /> */}
         <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
           <motion.h1
             initial={{ y: 0, opacity: 0, scale: 0.7 }}
@@ -48,14 +57,16 @@ function Hero() {
             >
               CONTACT
             </motion.button>
-            <motion.button
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut", delay: 0.8 }}
-              className="py-2 px-4 w-full sm:w-auto"
-            >
-              WORK &rarr;
-            </motion.button>
+            <Link href="/projects">
+              <motion.button
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.8 }}
+                className="py-2 px-4 w-full sm:w-auto"
+              >
+                WORK &rarr;
+              </motion.button>
+            </Link>
           </div>
         </div>
       </section>
@@ -100,11 +111,11 @@ function Hero() {
             href="mailto:your.email@example.com"
             className="text-primary-col hover:underline"
           >
-            your.email@example.com
+            lahcen.aharouane@gmail.com
           </Link>
           <div className="flex gap-4">
             <Link
-              href="https://www.linkedin.com/in/your-profile"
+              href="https://ma.linkedin.com/in/lahcen-aharouane-457a29223"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-col hover:underline"
@@ -112,7 +123,7 @@ function Hero() {
               LinkedIn
             </Link>
             <Link
-              href="https://github.com/your-username"
+              href="https://github.com/KyoZer0"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-col hover:underline"
