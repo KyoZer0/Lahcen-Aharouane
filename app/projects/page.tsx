@@ -10,6 +10,36 @@ export interface Project {
 }
 
 const projects: Project[] = [
+  {
+    slug: 'kloude',
+    name: 'Kloude',
+    description: 'A website for Kloude, A cloud-based platform that offers Performance & Budget Hosting for Any Platform!',
+    imageUrl: '/project4.png',
+  },
+  {
+    slug: 'kombathost',
+    name: 'KombatHost',
+    description: "A hosting platform for Next-Gen Games, Voice and Web Hosting Provider. Spececilized in providing DDos Protection & High Performance Servers.",
+    imageUrl: '/project5.png',
+  },
+  {
+    slug: 'arcane-studios',
+    name: 'Arcane Studios',
+    description: 'A platform that connects clients with freelancers for a wide range of services, fostering a collaborative environment for professional growth.',
+    imageUrl: '/project3.png',
+  },
+  {
+    slug: 'conflow-debug',
+    name: 'Conflow.Debug',
+    description: "A web development Agency that offers a wide range of services, including web development, web design, and digital marketing.",
+    imageUrl: '/project6.png',
+  },
+  {
+    slug: 'tabkeeper',
+    name: 'TabKeeper',
+    description: 'A chrome extension designed to help users automate the process of adding websites to their bookmarks.',
+    imageUrl: '/project7.png',
+  },
     {
       slug: 'aiais',
       name: 'AIAIS',
@@ -21,30 +51,6 @@ const projects: Project[] = [
       name: 'Centre Al amal',
       description: 'An advanced center management platform designed to facilitate interactions between students, teachers, and administrators, streamlining educational operations and communication.',
       imageUrl: '/project2.png',
-    },
-    {
-      slug: 'arcane-studios',
-      name: 'Arcane Studios',
-      description: 'A platform that connects clients with freelancers for a wide range of services, fostering a collaborative environment for professional growth.',
-      imageUrl: '/project3.png',
-    },
-    {
-      slug: 'kloude',
-      name: 'Kloude',
-      description: 'A website for Kloude, A cloud-based platform that offers Performance & Budget Hosting for Any Platform!',
-      imageUrl: '/project4.png',
-    },
-    {
-      slug: 'kombathost',
-      name: 'KombatHost',
-      description: "A hosting platform for Next-Gen Games, Voice and Web Hosting Provider. Spececilized in providing DDos Protection & High Performance Servers.",
-      imageUrl: '/project5.png',
-    },
-    {
-      slug: 'conflow-debug',
-      name: 'Conflow.Debug',
-      description: "A web development Agency that offers a wide range of services, including web development, web design, and digital marketing.",
-      imageUrl: '/project6.png',
     },
   ]
 
@@ -67,7 +73,7 @@ export default function ProjectsPage() {
                   alt={project.name}
                   width={400}
                   height={200}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover object-center"
                 />
                 <div className="p-4">
                   <h2 className="text-xl font-semibold mb-2">{project.name}</h2>

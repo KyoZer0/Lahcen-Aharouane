@@ -158,6 +158,23 @@ const projects: Project[] = [
     `,
     technologies: ["React", "Node.js", "MongoDB", "Express"],
   },
+  {
+    slug: "tabkeeper",
+    name: "TabKeeper",
+    description:
+      "A chrome extension designed to help users automate the process of adding websites to their bookmarks.",
+    images: ["/project7.png"],
+    fullDescription: `
+      TabKeeper is a Chrome extension that simplifies the process of adding bookmarks. This project showcases how small, focused tools can have a big impact on daily productivity and organization.
+  
+      Key Features and Achievements:
+      • Developed a lightweight, intuitive interface that seamlessly integrates with the Chrome browser, ensuring a smooth user experience
+      • Implemented an automated bookmarking system that adds websites to the user's bookmarks with a single click
+  
+      TabKeeper has revolutionized the way users manage their bookmarks. By providing a quick and easy way to save websites for later reference, I've streamlined the bookmarking process and reduced clutter in the browser. The extension's simplicity and efficiency have garnered praise from users looking to stay organized and productive.
+    `,
+    technologies: ["HTML", "CSS", "JavaScript"],
+  },
 ];
 export default function ProjectPage({ params }: { params: { slug: string } }) {
   const project = projects.find((p) => p.slug === params.slug);
