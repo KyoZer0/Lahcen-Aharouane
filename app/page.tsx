@@ -1,11 +1,5 @@
-import Hero from "@/components/Hero/Hero";
-import Nav from "@/components/Navigation/Nav";
+import { PortfolioHome } from "@/components/portfolio/PortfolioHome";
 
 export default function Home() {
-  return (
-    <>
-      <Nav />
-      <Hero />
-    </>
-  );
+  return <PortfolioHome />;
 }
