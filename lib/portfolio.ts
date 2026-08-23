@@ -120,17 +120,17 @@ export const capabilities = [
   {
     index: "01",
     title: "Product development",
-    copy: "From problem framing and prototypes to a usable, working digital product.",
+    copy: "Problem framing, prototypes, interfaces, and complete product delivery.",
   },
   {
     index: "02",
     title: "Web platforms",
-    copy: "Responsive interfaces and robust web systems built around real workflows.",
+    copy: "Responsive experiences and dependable systems built around real workflows.",
   },
   {
     index: "03",
     title: "Digital consulting",
-    copy: "Clear technical direction for businesses deciding what to build and how to deliver it.",
+    copy: "Clear technical direction for teams deciding what to build and how to deliver it.",
   },
 ];
 
