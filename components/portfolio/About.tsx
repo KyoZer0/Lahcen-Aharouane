@@ -6,9 +6,10 @@ export function About() {
     <div className="about-content">
       <h2 id="about-title" data-reveal>A developer’s mindset.<br />A product perspective.</h2>
       <div className="about-prose" data-reveal>
-        <p>I’m Lahcen, a digital product developer and CTO at Hikaritech, based in Casablanca. I work across software development, product strategy, UI/UX, infrastructure, and digital transformation — building systems that solve real business problems.</p>
+        <p>I’m Lahcen Aharouane, a digital product developer and CTO at Hikaritech, based in Casablanca. I work across software development, product strategy, UI/UX, infrastructure, and digital transformation — building systems that solve real business problems.</p>
         <p>My work spans enterprise software, browser games, and web applications. From understanding the problem to designing, building, deploying, and improving the product, I care about how every part works together.</p>
       </div>
+      <p className="name-variants" data-reveal>One name, a few spellings. My last name is Aharouane — you may also know it as Ahrouan, Ahrwan, or <bdi lang="ar" dir="rtl">أهروان</bdi> in Arabic.</p>
       <dl className="experience-list" data-reveal>
         <div><dt>Now</dt><dd>CTO · Product development</dd><dd><a href="https://hikaritech.ma/en/team" target="_blank" rel="noopener noreferrer">Hikaritech <span aria-hidden="true">↗</span></a></dd></div>
         <div><dt>Previously</dt><dd>IT &amp; digital transformation</dd><dd>Association Initiative Al Amal</dd></div>

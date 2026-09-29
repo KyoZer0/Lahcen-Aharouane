@@ -7,10 +7,19 @@ import { Services } from "@/components/portfolio/Services";
 import { Journal } from "@/components/portfolio/Journal";
 import { Contact } from "@/components/portfolio/Contact";
 import { PageMotion } from "@/components/portfolio/PageMotion";
+import { StructuredData } from "@/components/StructuredData";
+import { pageMetadata, profileSchema } from "@/lib/seo";
+import { site } from "@/lib/site";
+
+export const metadata = {
+  ...pageMetadata("Digital Product Developer", site.description, "/"),
+  title: { absolute: `${site.name} — Digital Product Developer` },
+};
 
 export default function Home() {
   return (
     <>
+      <StructuredData data={profileSchema} />
       <a className="skip-link" href="#main">Skip to content</a>
       <main id="main">
         <HeroEntrance>

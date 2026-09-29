@@ -5,17 +5,21 @@ import { SiteHeader } from "@/components/Hero/SiteHeader";
 import { ProjectMedia } from "@/components/portfolio/ProjectMedia";
 import { projects } from "@/lib/portfolio";
 import { contact } from "@/lib/site";
+import { pageMetadata, absoluteUrl, personId } from "@/lib/seo";
+import { StructuredData } from "@/components/StructuredData";
 
 export function generateStaticParams() { return projects.map(project => ({ slug: project.slug })); }
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const project = projects.find(item => item.slug === params.slug);
-  return { title: project?.title ?? "Project not found", description: project?.summary };
+  if (!project) return { title: "Project not found", robots: { index: false, follow: true } };
+  return pageMetadata(project.title, `${project.summary} ${project.category} project with contributions by Lahcen Aharouane.`, `/projects/${project.slug}`);
 }
 export default function ProjectPage({ params }: { params: { slug: string } }) {
   const project = projects.find(item => item.slug === params.slug);
   if (!project) notFound();
   const nextProject = projects[(projects.indexOf(project) + 1) % projects.length];
   return <>
+    <StructuredData data={{ "@context": "https://schema.org", "@type": "CreativeWork", name: project.title, description: project.context, url: absoluteUrl(`/projects/${project.slug}`), image: absoluteUrl(project.image), contributor: { "@id": personId, "@type": "Person", name: "Lahcen Aharouane", url: absoluteUrl("/") } }} />
     <a className="skip-link" href="#main">Skip to content</a>
     <SiteHeader inner />
     <main className="case-page" id="main">

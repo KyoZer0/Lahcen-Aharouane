@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { PageTransition } from "@/components/portfolio/PageTransition";
 import { projects } from "@/lib/portfolio";
+import { site } from "@/lib/site";
 
 const pageLabels = { "/": "Hello", "/work": "Work", ...Object.fromEntries(projects.map(project => [`/projects/${project.slug}`, project.title])) };
 
@@ -29,18 +30,15 @@ const ppradio = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
     default: "Lahcen Aharouane — Digital Product Developer",
     template: "%s — Lahcen Aharouane",
   },
-  description:
-    "Digital Product Developer in Casablanca building useful web platforms, product experiences, and business systems.",
-  openGraph: {
-    title: "Lahcen Aharouane — Digital Product Developer",
-    description:
-      "Digital products, web platforms, and consulting from Casablanca, Morocco.",
-    type: "website",
-  },
+  description: site.description,
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
 };
 
 export const viewport: Viewport = {

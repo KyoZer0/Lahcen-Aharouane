@@ -4,11 +4,14 @@ import { ProjectGrid } from "@/components/portfolio/ProjectGrid";
 import { PageMotion } from "@/components/portfolio/PageMotion";
 import { projects } from "@/lib/portfolio";
 import { contact } from "@/lib/site";
+import { pageMetadata, absoluteUrl, personId } from "@/lib/seo";
+import { StructuredData } from "@/components/StructuredData";
 
-export const metadata: Metadata = { title: "Work", description: "Websites, applications, and digital products by Lahcen Aharouane. Explore PlayTad, Agent71, VoxPair, ILikePDF, Archilux, and Madarij." };
+export const metadata: Metadata = pageMetadata("Work", "Websites, applications, and digital products by Lahcen Aharouane. Explore PlayTad, Agent71, VoxPair, ILikePDF, Archilux, and Madarij.", "/work");
 
 export default function WorkPage() {
   return <>
+    <StructuredData data={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Work by Lahcen Aharouane", url: absoluteUrl("/work"), about: { "@id": personId }, mainEntity: { "@type": "ItemList", itemListElement: projects.map((project, index) => ({ "@type": "ListItem", position: index + 1, name: project.title, url: absoluteUrl(`/projects/${project.slug}`) })) } }} />
     <a className="skip-link" href="#main">Skip to content</a>
     <SiteHeader inner />
     <main className="work-page" id="main">

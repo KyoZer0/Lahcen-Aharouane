@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { gsap } from "gsap";
+import { createTransitionPicker, transitionVariants, type TransitionVariant } from "@/lib/page-transitions";
 import "./page-transition.css";
 
 type Journey = {
@@ -12,7 +13,15 @@ type Journey = {
   ready: boolean;
   coveredAt: number;
   history: boolean;
+  variant: TransitionVariant;
+  direction: number;
 };
+
+function panelOffset(index: number, variant: TransitionVariant, direction: number, leaving = false) {
+  const sign = (index % 2 ? 1 : -1) * direction * (leaving ? -1 : 1);
+  if (variant.id === "poster") return { xPercent: sign * 112, yPercent: 0 };
+  return { xPercent: variant.id === "diagonal" ? -sign * 10 : 0, yPercent: sign * 115 };
+}
 
 function destinationFor(anchor: HTMLAnchorElement) {
   if (anchor.hasAttribute("download") || anchor.dataset.noTransition !== undefined) return null;
@@ -38,6 +47,7 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
   const currentPath = useRef(pathname);
   const pageLabels = useRef(labels);
   const reveal = useRef<() => void>(() => {});
+  const picker = useRef<ReturnType<typeof createTransitionPicker> | null>(null);
   const [label, setLabel] = useState("Work");
   const [announcement, setAnnouncement] = useState("");
 
@@ -56,16 +66,20 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
     const overlay = root.current;
     if (!overlay) return;
     const content = document.getElementById("site-content");
-    const slices = overlay.querySelectorAll<HTMLElement>(".transition-slice");
+    const allSlices = Array.from(overlay.querySelectorAll<HTMLElement>(".transition-slice"));
     const title = overlay.querySelector<HTMLElement>(".transition-title");
     const print = overlay.querySelectorAll<HTMLElement>(".transition-print");
     const lowerWord = overlay.querySelector<HTMLElement>(".transition-word-bottom");
+    const middleWord = overlay.querySelector<HTMLElement>(".transition-word-middle");
+    const ghosts = overlay.querySelectorAll<HTMLElement>(".transition-ghost");
+    const pickVariant = picker.current ?? (picker.current = createTransitionPicker());
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const prefetched = new Set<string>();
     let animation: gsap.core.Timeline | null = null;
     let failureTimer = 0;
     let revealTimer = 0;
     let frame = 0;
+    let preloadTimer = 0;
     let oldScrollBehavior: string | null = null;
 
     const release = () => {
@@ -108,8 +122,8 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
       if (!pending?.ready || !pending.coveredAt || overlay.dataset.phase !== "covered") return;
       window.clearTimeout(failureTimer);
       window.clearTimeout(revealTimer);
-      // A short complete frame keeps fast, cached navigations from becoming a flash.
-      const hold = Math.max(0, 160 - (performance.now() - pending.coveredAt));
+      // Hold the finished poster long enough to read before the next page is revealed.
+      const hold = Math.max(0, pending.variant.hold - (performance.now() - pending.coveredAt));
       revealTimer = window.setTimeout(() => {
         frame = requestAnimationFrame(() => {
           if (journey.current !== pending) return;
@@ -120,11 +134,18 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
             else window.scrollTo({ top: 0, left: 0, behavior: "auto" });
           }
           overlay.dataset.phase = "revealing";
+          const slices = allSlices.slice(0, pending.variant.pieces);
           animation = gsap.timeline({ onComplete: () => { reset(); focusDestination(); } });
-          animation.to(lowerWord, { x: -18, duration: .1, ease: "steps(2)" }, 0)
-            .to(title, { xPercent: 7, autoAlpha: 0, duration: .18, ease: "power2.in" }, .025)
-            .to(print, { autoAlpha: 0, duration: .12 }, .025)
-            .to(slices, { yPercent: index => index === 1 ? 112 : -112, xPercent: index => index === 1 ? -12 : 12, duration: .48, stagger: .045, ease: "power3.inOut" }, .07);
+          animation.to(middleWord, { x: 18 * pending.direction, duration: .24, ease: "steps(3)" }, 0)
+            .to(lowerWord, { x: -24 * pending.direction, duration: .28, ease: "power2.in" }, 0)
+            .to(ghosts, { xPercent: index => (index ? 8 : -8) * pending.direction, autoAlpha: 0, duration: .3 }, 0)
+            .to(title, { xPercent: 5 * pending.direction, autoAlpha: 0, duration: .36, ease: "power2.in" }, .05)
+            .to(print, { autoAlpha: 0, duration: .3 }, .05)
+            .to(slices, {
+              xPercent: index => panelOffset(index, pending.variant, pending.direction, true).xPercent,
+              yPercent: index => panelOffset(index, pending.variant, pending.direction, true).yPercent,
+              duration: pending.variant.exit, stagger: pending.variant.exitStagger, ease: "power3.inOut",
+            }, .14);
         });
       }, hold);
     };
@@ -133,19 +154,30 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
     const begin = (url: URL, history = false) => {
       if (journey.current) reset();
       const destination = sectionLabels[url.hash] ?? pageLabels.current[url.pathname] ?? "Lahcen Aharouane";
+      const variant = pickVariant();
+      const direction = Math.random() < .5 ? -1 : 1;
+      const slices = allSlices.slice(0, variant.pieces);
       setLabel(destination);
       setAnnouncement(`Opening ${destination}`);
-      const pending: Journey = { url, from: currentPath.current, issued: history, ready: false, coveredAt: 0, history };
+      const pending: Journey = { url, from: currentPath.current, issued: history, ready: false, coveredAt: 0, history, variant, direction };
       journey.current = pending;
       oldScrollBehavior = document.documentElement.style.scrollBehavior;
       document.documentElement.style.scrollBehavior = "auto";
       if (content) { content.inert = true; content.setAttribute("aria-busy", "true"); }
       overlay.dataset.phase = "covering";
+      overlay.dataset.variant = variant.id;
+      overlay.style.setProperty("--transition-artwork", `url("${variant.artwork}")`);
       gsap.set(overlay, { autoAlpha: 1 });
-      gsap.set(slices, { yPercent: history ? 0 : index => index === 1 ? 112 : -112, xPercent: history ? 0 : index => index === 1 ? -10 : 10 });
+      gsap.set(allSlices, { display: index => index < variant.pieces ? "block" : "none" });
+      gsap.set(slices, {
+        xPercent: history ? 0 : index => panelOffset(index, variant, direction).xPercent,
+        yPercent: history ? 0 : index => panelOffset(index, variant, direction).yPercent,
+      });
       gsap.set([title, ...Array.from(print)], { autoAlpha: 0 });
-      gsap.set(title, { xPercent: -6, yPercent: -50, y: 0 });
-      gsap.set(lowerWord, { x: 12 });
+      gsap.set(title, { xPercent: -4 * direction, yPercent: -50, y: 0, rotation: variant.id === "poster" ? -3 : 0 });
+      gsap.set(middleWord, { x: 22 * direction });
+      gsap.set(lowerWord, { x: -16 * direction });
+      gsap.set(ghosts, { autoAlpha: 0, xPercent: index => (index ? -5 : 5) * direction, yPercent: index => index ? 105 : -105 });
       animation = gsap.timeline({ onComplete: () => {
         if (journey.current !== pending) return;
         pending.coveredAt = performance.now();
@@ -153,10 +185,12 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
         issueNavigation();
         revealPage();
       } });
-      animation.to(slices, { yPercent: 0, xPercent: 0, duration: history ? .01 : .36, stagger: history ? 0 : .035, ease: "power3.inOut" }, 0)
-        .to(title, { xPercent: 0, autoAlpha: 1, duration: .2, ease: "power2.out" }, history ? 0 : .18)
-        .to(print, { autoAlpha: 1, duration: .18 }, history ? 0 : .2)
-        .to(lowerWord, { x: 0, duration: .16, ease: "steps(2)" }, history ? .04 : .26);
+      animation.to(slices, { yPercent: 0, xPercent: 0, duration: history ? .01 : variant.enter, stagger: history ? 0 : variant.stagger, ease: "power3.inOut" }, 0)
+        .to(title, { xPercent: 0, autoAlpha: 1, duration: .44, ease: "power3.out" }, history ? .05 : .35)
+        .to(print, { autoAlpha: 1, duration: .38 }, history ? .05 : .4)
+        .to(middleWord, { x: -5 * direction, duration: .34, ease: "steps(3)" }, history ? .15 : .48)
+        .to(lowerWord, { x: 3 * direction, duration: .38, ease: "power2.out" }, history ? .15 : .48);
+      if (variant.id === "signal") animation.to(ghosts, { xPercent: 0, autoAlpha: .24, duration: .42, stagger: .05, ease: "power2.out" }, history ? .2 : .5);
       // A failed client route must never leave the website behind a permanent curtain.
       failureTimer = window.setTimeout(() => {
         if (journey.current !== pending) return;
@@ -195,11 +229,15 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
     };
     const onPageShow = (event: PageTransitionEvent) => { if (event.persisted) reset(); };
 
-    // Warm the shared artwork once; all three moving slices reuse the same resource.
-    const artwork = new window.Image();
-    artwork.decoding = "async";
-    artwork.fetchPriority = "low";
-    artwork.src = "/transitions/ink-collage.png";
+    // Warm artwork after the initial content; each composition reuses one cached image.
+    if (!motion.matches) preloadTimer = window.setTimeout(() => {
+      transitionVariants.forEach(variant => {
+        const artwork = new window.Image();
+        artwork.decoding = "async";
+        artwork.fetchPriority = "low";
+        artwork.src = variant.artwork;
+      });
+    }, 900);
     document.addEventListener("click", onClick, true);
     document.addEventListener("pointerover", onIntent, { passive: true });
     document.addEventListener("focusin", onIntent);
@@ -217,6 +255,7 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
       animation?.kill();
       window.clearTimeout(failureTimer);
       window.clearTimeout(revealTimer);
+      window.clearTimeout(preloadTimer);
       cancelAnimationFrame(frame);
       journey.current = null;
       release();
@@ -224,14 +263,15 @@ export function PageTransition({ labels }: { labels: Record<string, string> }) {
   }, [router]);
 
   return <>
-    <div ref={root} className="page-transition" data-phase="idle" aria-hidden="true">
-      <div className="transition-slice transition-slice-left" />
-      <div className="transition-slice transition-slice-middle" />
-      <div className="transition-slice transition-slice-right" />
+    <div ref={root} className="page-transition" data-phase="idle" data-variant="diagonal" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map(index => <div key={index} className="transition-slice" data-piece={index} />)}
       <div className="transition-print transition-signature">LA.</div>
       <div className="transition-title" data-length={label.length > 11 ? "long" : label.length > 5 ? "medium" : "short"}>
         <span className="transition-word transition-word-top">{label}</span>
+        <span className="transition-word transition-word-middle">{label}</span>
         <span className="transition-word transition-word-bottom">{label}</span>
+        <span className="transition-ghost">{label}</span>
+        <span className="transition-ghost">{label}</span>
       </div>
       <span className="transition-print transition-credit">Lahcen Aharouane</span>
     </div>
