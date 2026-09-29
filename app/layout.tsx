@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { PageTransition } from "@/components/portfolio/PageTransition";
+import { projects } from "@/lib/portfolio";
+
+const pageLabels = { "/": "Hello", "/work": "Work", ...Object.fromEntries(projects.map(project => [`/projects/${project.slug}`, project.title])) };
 
 const ppradio = localFont({
   src: [
@@ -40,8 +44,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#101011",
-  colorScheme: "dark",
+  themeColor: "#f4f4f3",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -51,7 +55,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={ppradio.variable}>{children}</body>
+      <body className={ppradio.variable}>
+        <div id="site-content">{children}</div>
+        <PageTransition labels={pageLabels} />
+      </body>
     </html>
   );
 }

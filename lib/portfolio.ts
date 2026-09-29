@@ -1,162 +1,90 @@
-export type PortfolioProject = {
-  slug: string;
-  index: string;
-  name: string;
-  category: string;
-  summary: string;
-  description: string;
-  role: string;
-  year: string;
-  images: string[];
-  technologies: string[];
-  liveUrl?: string;
+export type Project = {
+  slug: string; title: string; category: string; attribution: string; image: string;
+  summary: string; context: string; role: string;
+  technologies?: string[]; highlights?: string[]; capture?: string;
+  source?: string; sourceLabel?: string;
+  links?: { label: string; url: string }[];
 };
-
-export const projects: PortfolioProject[] = [
+export const projects: Project[] = [
   {
-    slug: "centre-al-amal",
-    index: "01",
-    name: "Centre Al Amal",
-    category: "Education platform",
-    summary:
-      "An academic operations platform connecting students, teachers, and administrators.",
-    description:
-      "Centre Al Amal brings core education workflows into one clear digital environment. The work focused on shaping a usable management experience for different roles, from day-to-day administration to student progress and communication.",
-    role: "Product design & development",
-    year: "2024",
-    images: ["/project2.png", "/project2-1.png"],
-    technologies: ["Laravel", "PHP", "MySQL", "HTML", "CSS"],
-    liveUrl: "https://centrealamal.ma/",
+    slug: "playtad", title: "PlayTad", category: "Browser gaming", attribution: "Hikaritech",
+    image: "/work/playtad.png", capture: "The live PlayTad website.",
+    summary: "Small games. Whole worlds.",
+    context: "PlayTad is Hikaritech’s browser-game studio in Casablanca. Its website brings the studio, its craft, and games such as JigSolitaire, Magic Sort, and FillWords into one playful digital world.",
+    role: "Technical direction and product development at Hikaritech, connecting the studio’s visual identity, web experience, performance, and growth.",
+    technologies: ["Astro", "TypeScript", "GSAP"],
+    highlights: ["A studio identity rooted in Casablanca", "A dedicated catalogue and pages for each game", "Responsive layouts and considered motion"],
+    source: "https://playtad.com/", sourceLabel: "Visit PlayTad",
+    links: [{ label: "JigSolitaire", url: "https://jigsolitaire.online" }, { label: "Magic Sort", url: "https://magicsort.online" }, { label: "FillWords", url: "https://fillwords.com" }]
   },
   {
-    slug: "aiais",
-    index: "02",
-    name: "AIAIS",
-    category: "Social impact platform",
-    summary:
-      "A public-facing platform supporting the association’s social-integration mission.",
-    description:
-      "The AIAIS website gives the association a central place to communicate its work, publish updates, welcome volunteers, and make community participation easier. The result balances a human mission with a maintainable digital presence.",
-    role: "Web development & digital experience",
-    year: "2024",
-    images: ["/project1.png", "/project1-2.png", "/project1-1.png"],
-    technologies: ["Laravel", "PHP", "MySQL", "HTML", "CSS"],
-    liveUrl: "https://aiais.org",
+    slug: "agent71", title: "Agent71", category: "Enterprise software", attribution: "Hikaritech",
+    image: "/work/agent71.png", capture: "The live Agent71 website, with its illustrative product dashboard.",
+    summary: "One place for a business to move forward.",
+    context: "Agent71 is an ERP initiative for Moroccan SMEs, bringing finance, sales, purchasing, inventory, and accounting into a connected product vision. This website introduces the platform through a clear product narrative and interactive interface previews.",
+    role: "Technical direction and product development at Hikaritech. The work shown here focuses on the public product website, its interface, and the way it communicates the platform.",
+    technologies: ["React", "JavaScript", "Vite", "GSAP"],
+    highlights: ["A product-led homepage and dashboard presentation", "English, French, and Arabic navigation", "Dedicated product scope and e-invoicing pages"],
+    source: "https://agent71.com/", sourceLabel: "Visit Agent71"
   },
   {
-    slug: "kloude",
-    index: "03",
-    name: "Kloude",
-    category: "Hosting experience",
-    summary:
-      "A hosting product experience designed to make performance and plans easier to understand.",
-    description:
-      "Kloude translates a technical hosting offer into a confident, approachable product story. Clear comparison, responsive presentation, and a strong visual system help users move from evaluating infrastructure to choosing a plan.",
-    role: "Product UI & front-end",
-    year: "2024",
-    images: ["/project4.png", "/project4-1.png", "/project4-2.png"],
-    technologies: ["React", "Node.js", "MongoDB", "Express", "Figma"],
+    slug: "voxpair", title: "VoxPair", category: "Mobile application", attribution: "Product development",
+    image: "/work/voxpair.png", capture: "VoxPair’s local web preview. Native features are built for Android and iOS.",
+    summary: "Good roads. Better company.",
+    context: "VoxPair is a motorcycle riding companion for Android and iOS. It brings ride planning, navigation, saved journeys, rider profiles, and group coordination into one focused interface.",
+    role: "Product design and application development, from the onboarding flow and riding interface to the systems supporting group journeys and voice communication.",
+    technologies: ["React Native", "Expo", "TypeScript", "Node.js", "LiveKit", "MapLibre"],
+    highlights: ["Solo and group ride planning", "Maps, directions, and an opt-in location-sharing flow", "Rider profiles, bikes, and saved ride history"]
   },
   {
-    slug: "arcane-studios",
-    index: "04",
-    name: "Arcane Studios",
-    category: "Freelance marketplace",
-    summary:
-      "A marketplace concept connecting clients and independent specialists.",
-    description:
-      "Arcane Studios explores a service marketplace built around relevant matching, professional portfolios, communication, and project collaboration.",
-    role: "Full-stack product development",
-    year: "2023",
-    images: ["/project3.png", "/project3-1.png", "/project3-2.png"],
-    technologies: ["React", "Node.js", "MongoDB", "Express"],
+    slug: "ilikepdf", title: "ILikePDF", category: "Document tools", attribution: "Hikaritech",
+    image: "/work/ilikepdf.png", capture: "The live ILikePDF tool catalogue.",
+    summary: "Everyday PDF work. A little less effort.",
+    context: "ILikePDF is a document workspace for merging, splitting, organizing, converting, and protecting PDFs. Guest processing happens in the browser, while account features add saved files and activity history.",
+    role: "Design and development of the product experience, connecting a Rust web application with browser-based document processing, account infrastructure, and deployment.",
+    technologies: ["Rust", "Leptos", "Axum", "WebAssembly", "PostgreSQL", "SQLx"],
+    highlights: ["A searchable catalogue of PDF tools", "Document processing on the user’s device", "Account workspaces with encrypted file storage"],
+    source: "https://ilikepdf.ma/", sourceLabel: "Visit ILikePDF"
   },
   {
-    slug: "kombathost",
-    index: "05",
-    name: "KombatHost",
-    category: "Game hosting",
-    summary:
-      "A focused hosting interface for game, voice, and web infrastructure.",
-    description:
-      "KombatHost packages performance, protection, and server deployment into an experience aimed at demanding gaming communities.",
-    role: "Product UI & development",
-    year: "2023",
-    images: ["/project5.png"],
-    technologies: ["React", "Node.js", "MongoDB", "Express"],
+    slug: "archilux", title: "Archilux", category: "Brand & commerce", attribution: "Website development",
+    image: "/work/archilux.png", capture: "The local Archilux website preview. The hero is an illustrative campaign scene.",
+    summary: "A different feeling starts with light.",
+    context: "A digital showroom for Archilux, a lighting business in Casablanca. Cinematic campaign scenes introduce a catalogue of pendants, chandeliers, wall lights, and architectural lighting, with original product photography at the centre of the browsing experience.",
+    role: "Website design and development across the visual direction, multilingual catalogue, product discovery, motion, and enquiry preparation.",
+    technologies: ["Astro", "TypeScript", "CSS", "AVIF / WebP"],
+    highlights: ["English, French, and Arabic, including RTL layouts", "Product discovery, search, sorting, and a style finder", "A local selection and project enquiry draft"]
   },
   {
-    slug: "conflow-debug",
-    index: "06",
-    name: "Conflow.Debug",
-    category: "Digital studio",
-    summary:
-      "A digital studio presence bringing development, design, and marketing together.",
-    description:
-      "Conflow.Debug presents a flexible digital service offer through a cohesive interface, with an emphasis on clear positioning and strong visual delivery.",
-    role: "Design & development",
-    year: "2023",
-    images: ["/project6.png", "/project6-1.png"],
-    technologies: ["React", "Node.js", "MongoDB", "Express"],
+    slug: "madarij", title: "Madarij", category: "Education platform", attribution: "Product development",
+    image: "/work/madarij.png", capture: "The English homepage of the local Madarij website preview.",
+    summary: "A whole school, finally connected.",
+    context: "Madarij connects school teams and families around academics, communication, administration, and transport. The bilingual website introduces the product, while a separate school application provides role-scoped workspaces and persistent school records.",
+    role: "Product design and development across the public website and school application, with attention to clear information, school roles, and modular software architecture.",
+    technologies: ["Astro", "GSAP", "Rust", "Leptos", "PostgreSQL"],
+    highlights: ["A bilingual French and English product website", "Dedicated journeys for school teams and families", "School workspaces with scoped roles and records"]
   },
   {
-    slug: "tabkeeper",
-    index: "07",
-    name: "TabKeeper",
-    category: "Browser utility",
-    summary: "A compact Chrome extension for faster bookmark capture.",
-    description:
-      "TabKeeper is a lightweight browser tool that removes friction from saving useful websites for later.",
-    role: "Product design & development",
-    year: "2023",
-    images: ["/project7.png"],
-    technologies: ["HTML", "CSS", "JavaScript"],
+    slug: "centre-al-amal", title: "Centre Al Amal", category: "Education", attribution: "Team collaboration",
+    image: "/project2.png", capture: "An original screenshot from the portfolio archive.",
+    summary: "A clearer window into education.",
+    context: "A digital presence for Centre Al Amal, introducing the centre, its learning opportunities, and access to registration. The project connects an educational institution with the people it serves.",
+    role: "Team collaboration and technical guidance. Public project credits acknowledge Imad Guidouh’s web development and my collaboration; Oussama Kbaili also credits my professional supervision on a related academic management project.",
+    source: "https://www.linkedin.com/posts/imad-guidouh_newbeginnings-grateful-developerjourney-activity-7247962366334631936-0JxV", sourceLabel: "Read the team’s project note"
   },
+  {
+    slug: "aiais", title: "AIAIS", category: "Community", attribution: "Team collaboration",
+    image: "/project1.png", capture: "An original screenshot from the portfolio archive.",
+    summary: "Making community work visible.",
+    context: "An association website bringing news, activities, and ways to get involved into one public-facing experience. The original portfolio capture shows the organisation’s community initiatives and institutional updates.",
+    role: "A collaborative team project with Imad Guidouh, who publicly credits the partnership. My broader work at Association Initiative Al Amal also included IT leadership, archiving systems, and online pre-inscription platforms.",
+    source: "https://aiais.org", sourceLabel: "Visit AIAIS",
+    links: [{ label: "Read the team’s project note", url: "https://www.linkedin.com/posts/imad-guidouh_newbeginnings-grateful-developerjourney-activity-7247962366334631936-0JxV" }]
+  }
 ];
-
-export const featuredProjects = projects.slice(0, 3);
-
-export const capabilities = [
-  {
-    index: "01",
-    title: "Product development",
-    copy: "Problem framing, prototypes, interfaces, and complete product delivery.",
-  },
-  {
-    index: "02",
-    title: "Web platforms",
-    copy: "Responsive experiences and dependable systems built around real workflows.",
-  },
-  {
-    index: "03",
-    title: "Digital consulting",
-    copy: "Clear technical direction for teams deciding what to build and how to deliver it.",
-  },
+export const featuredProjects = ["playtad", "agent71", "archilux", "madarij"].map(slug => projects.find(project => project.slug === slug)!);
+export const articles = [
+  { category: "Puzzle design", title: "How puzzles build resilience", publication: "JigSolitaire", url: "https://jigsolitaire.online/blog/puzzles-build-resilience/" },
+  { category: "Focus & play", title: "Why AMAZE is good for focus", publication: "AMAZE", url: "https://amaze-game.com/blog/why-amaze-game-is-good-for-focus/" },
+  { category: "Shared experiences", title: "Cooperative puzzle games for the family", publication: "JigSolitaire", url: "https://jigsolitaire.online/blog/cooperative-puzzle-games-family/" }
 ];
-
-export const experience = [
-  {
-    index: "01",
-    name: "Hikaritech",
-    detail: "Digital product development",
-    meta: "Casablanca",
-  },
-  {
-    index: "02",
-    name: "Association Initiative Al Amal",
-    detail: "Digital, web & communications",
-    meta: "Social impact",
-  },
-  {
-    index: "03",
-    name: "Holberton School",
-    detail: "Software engineering",
-    meta: "2023—2024",
-  },
-];
-
-export const socialLinks = {
-  email: "lahcen.aharouane@gmail.com",
-  linkedin: "https://ma.linkedin.com/in/lahcen-aharouane",
-  github: "https://github.com/KyoZer0",
-};

@@ -1,145 +1,39 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { projects, socialLinks } from "@/lib/portfolio";
+import { SiteHeader } from "@/components/Hero/SiteHeader";
+import { ProjectMedia } from "@/components/portfolio/ProjectMedia";
+import { projects } from "@/lib/portfolio";
+import { contact } from "@/lib/site";
 
-type ProjectPageProps = {
-  params: {
-    slug: string;
-  };
-};
-
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M5 19 19 5M9 5h10v10"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="square"
-      />
-    </svg>
-  );
+export function generateStaticParams() { return projects.map(project => ({ slug: project.slug })); }
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const project = projects.find(item => item.slug === params.slug);
+  return { title: project?.title ?? "Project not found", description: project?.summary };
 }
-
-function AsteriskMark() {
-  return (
-    <svg className="project-brand" viewBox="0 0 66 62" fill="none" aria-hidden="true">
-      <path
-        d="M33 1v60M3 31h60M11.8 9.8l42.4 42.4M54.2 9.8 11.8 52.2"
-        stroke="currentColor"
-        strokeWidth="5"
-        strokeLinecap="square"
-      />
-    </svg>
-  );
-}
-
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
-}
-
-export function generateMetadata({ params }: ProjectPageProps): Metadata {
-  const project = projects.find((item) => item.slug === params.slug);
-
-  if (!project) return {};
-
-  return {
-    title: project.name,
-    description: project.summary,
-  };
-}
-
-export default function ProjectPage({ params }: ProjectPageProps) {
-  const project = projects.find((item) => item.slug === params.slug);
-
+export default function ProjectPage({ params }: { params: { slug: string } }) {
+  const project = projects.find(item => item.slug === params.slug);
   if (!project) notFound();
-
-  const currentIndex = projects.findIndex((item) => item.slug === project.slug);
-  const nextProject = projects[(currentIndex + 1) % projects.length];
-
-  return (
-    <main className="project-page">
-      <header className="project-header">
-        <Link href="/#index" aria-label="Back to Lahcen Aharouane home">
-          <AsteriskMark />
-          <span>Lahcen Aharouane</span>
-        </Link>
-        <Link href="/#work">All work</Link>
-      </header>
-
-      <article>
-        <div className="project-hero">
-          <div className="project-hero__intro">
-            <span className="project-kicker">
-              {project.index} · {project.category}
-            </span>
-            <h1>{project.name}</h1>
-            <p>{project.summary}</p>
-          </div>
-
-          <div className="project-hero__facts">
-            <div>
-              <span>Role</span>
-              <strong>{project.role}</strong>
-            </div>
-            <div>
-              <span>Year</span>
-              <strong>{project.year}</strong>
-            </div>
-            <div>
-              <span>Stack</span>
-              <strong>{project.technologies.join(" · ")}</strong>
-            </div>
-          </div>
+  const nextProject = projects[(projects.indexOf(project) + 1) % projects.length];
+  return <>
+    <a className="skip-link" href="#main">Skip to content</a>
+    <SiteHeader inner />
+    <main className="case-page" id="main">
+      <Link className="text-link case-back" href="/work">← All work</Link>
+      <div className="case-heading"><h1>{project.title}</h1><p>{project.category}<br />{project.attribution}</p></div>
+      <ProjectMedia project={project} priority />
+      <p className="capture-caption">{project.capture}</p>
+      <div className="case-content">
+        <h2>{project.summary}</h2>
+        <div><p>{project.context}</p><h3>My contribution</h3><p>{project.role}</p>
+          {project.technologies && <><h3>Built with</h3><ul className="case-technologies">{project.technologies.map(technology => <li key={technology}>{technology}</li>)}</ul></>}
+          {project.highlights && <><h3>Inside the project</h3><ul className="case-highlights">{project.highlights.map(highlight => <li key={highlight}>{highlight}</li>)}</ul></>}
+          {project.source && <a className="text-link case-source" href={project.source} target="_blank" rel="noopener noreferrer">{project.sourceLabel} <span aria-hidden="true">↗</span></a>}
+          {project.links && <div className="case-links">{project.links.map(link => <a key={link.url} className="text-link" href={link.url} target="_blank" rel="noopener noreferrer">{link.label} <span aria-hidden="true">↗</span></a>)}</div>}
         </div>
-
-        <figure className="project-cover">
-          <Image
-            src={project.images[0]}
-            alt={project.name + " full project view"}
-            fill
-            priority
-            sizes="100vw"
-            className="project-cover__image"
-          />
-        </figure>
-
-        <section className="project-overview">
-          <span>Overview</span>
-          <p>{project.description}</p>
-          {project.liveUrl ? (
-            <a href={project.liveUrl} target="_blank" rel="noreferrer">
-              Visit live project <ArrowIcon />
-            </a>
-          ) : null}
-        </section>
-
-        {project.images.slice(1).map((image, index) => (
-          <figure className="project-gallery-image" key={image}>
-            <Image
-              src={image}
-              alt={project.name + " detail " + (index + 1)}
-              fill
-              sizes="100vw"
-              className="project-gallery-image__asset"
-            />
-          </figure>
-        ))}
-      </article>
-
-      <footer className="next-project">
-        <span>Next project</span>
-        <Link href={"/projects/" + nextProject.slug}>
-          <strong>{nextProject.name}</strong>
-          <ArrowIcon />
-        </Link>
-        <div>
-          <a href={"mailto:" + socialLinks.email}>{socialLinks.email}</a>
-          <span>Casablanca, Morocco</span>
-        </div>
-      </footer>
+      </div>
+      <div className="next-project"><p>Next project</p><Link href={`/projects/${nextProject.slug}`}>{nextProject.title} <span aria-hidden="true">↗</span></Link></div>
+      <div className="case-footer"><Link href="/work" className="text-link">← All work</Link><a href={`mailto:${contact.email}`} className="text-link">Let’s work together <span aria-hidden="true">↗</span></a></div>
     </main>
-  );
+  </>;
 }

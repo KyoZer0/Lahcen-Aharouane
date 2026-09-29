@@ -1,0 +1,76 @@
+.page-transition {
+  --transition-pink: #ff006c;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  isolation: isolate;
+  pointer-events: none;
+  color: #f4f4f3;
+}
+.page-transition:not([data-phase="idle"]) { pointer-events: auto; cursor: progress; }
+.transition-slice {
+  position: absolute;
+  inset: -1px;
+  background: #101010 url("/transitions/ink-collage.png") center / cover no-repeat;
+}
+.page-transition:not([data-phase="idle"]) .transition-slice { will-change: transform; }
+.transition-slice-left {
+  clip-path: polygon(0 0, 54% 0, 52% 8%, 51% 10%, 50% 17%, 47% 22%, 47.5% 25%, 44% 33%, 42% 39%, 40% 43%, 40.5% 46%, 37% 54%, 35% 61%, 33% 65%, 33.5% 68%, 30% 76%, 28% 83%, 26% 88%, 23% 100%, 0 100%);
+}
+.transition-slice-middle {
+  clip-path: polygon(51% 0, 93% 0, 89% 9%, 90% 12%, 86% 21%, 83% 28%, 84% 31%, 80% 40%, 77% 48%, 78% 51%, 74% 60%, 71% 68%, 72% 70%, 68% 79%, 65% 87%, 62% 100%, 20% 100%, 23% 88%, 26% 80%, 28% 73%, 29% 68%, 32% 62%, 34% 55%, 36% 46%, 40% 37%, 41% 30%, 45% 22%, 47% 12%);
+}
+.transition-slice-right {
+  clip-path: polygon(90% 0, 100% 0, 100% 100%, 58% 100%, 61% 90%, 64% 84%, 66% 78%, 67% 71%, 70% 65%, 72% 57%, 74% 50%, 78% 40%, 80% 32%, 83% 24%, 85% 16%);
+}
+.transition-print { position: absolute; z-index: 2; font-weight: 400; opacity: 0; }
+.transition-signature { top: 26px; left: 30px; font-size: 38px; font-weight: 800; letter-spacing: -.065em; }
+.transition-credit { bottom: 26px; left: 30px; font-size: 21px; }
+.transition-title {
+  position: absolute;
+  z-index: 1;
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  opacity: 0;
+  font-size: clamp(90px, 25vw, 440px);
+  line-height: .83;
+  font-weight: 800;
+  letter-spacing: -.055em;
+  text-transform: uppercase;
+}
+.transition-title[data-length="medium"] { font-size: clamp(60px, 17vw, 290px); }
+.transition-title[data-length="long"] { font-size: clamp(44px, 11vw, 190px); }
+.transition-title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 7%;
+  right: 7%;
+  height: .035em;
+  background: var(--transition-pink);
+  transform: rotate(-4deg);
+}
+.transition-word { grid-area: 1 / 1; max-width: 100%; }
+.transition-word-top { clip-path: polygon(0 0, 100% 0, 100% 43%, 0 59%); }
+.transition-word-bottom { clip-path: polygon(0 62%, 100% 46%, 100% 100%, 0 100%); }
+/* Focus lands on the new document without drawing a box around the whole page. */
+main[tabindex="-1"]:focus { outline: none; }
+@media (max-width: 760px) {
+  .transition-slice { background-position: 30% center; }
+  .transition-signature { top: 24px; left: 24px; font-size: 30px; }
+  .transition-credit { bottom: max(24px, env(safe-area-inset-bottom)); left: 24px; font-size: 16px; }
+  .transition-title { left: 5%; right: 5%; font-size: 26vw; }
+  .transition-title[data-length="medium"] { font-size: 17vw; }
+  .transition-title[data-length="long"] { font-size: 12vw; line-height: .95; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { display: none !important; }
+}

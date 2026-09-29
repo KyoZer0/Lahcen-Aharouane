@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Lahcen Aharouane — Portfolio
 
-## Getting Started
+A minimal personal portfolio built with Next.js 14, React, TypeScript, local PP Radio Grotesk fonts, and GSAP.
 
-First, run the development server:
+## Run
 
-```bash
+```sh
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. For a production preview, run `npm run build` followed by `npm start`. Stop the development server before building because both use the same `.next` directory.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Content and layout
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- `app/page.tsx`: homepage composition.
+- `components/Hero`: navigation, intro animation, and cursor-following portrait.
+- `components/portfolio`: selected work, biography, services, journal, contact, and scroll reveals.
+- `lib/portfolio.ts`: project and article content, including eight project detail routes.
+- `app/work/page.tsx`: complete work archive; `/projects` redirects here.
+- `lib/technologies.ts`: grouped technologies from the LinkedIn About section.
+- `public/work`: six real project screenshots from live sites and local previews.
+- `lib/site.ts`: email and social links.
+- `content-sources.md`: public research sources and attribution notes.
+- `.codex-design-v4`: section concepts, design specification, and verification report.
 
-## Learn More
+## Portrait
 
-To learn more about Next.js, take a look at the following resources:
+The eight requested directions and neutral cutout are stored in `public/generated/head-cutouts`. Original full-photo variants remain in `public/generated/head-directions`; the original photograph is `public/lahcen2.jpg`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The suit is a single fixed image. Only the masked head layers crossfade with GSAP. CSS registration aligns each generated cutout at the collar; complementary alpha masks and additive blending prevent a bright neck seam. Cursor direction uses a dead zone and angular hysteresis. Rapid movements retarget the current opacity values instead of snapping or queuing animations.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Keyboard: focus the portrait and use Left/Right to cycle, Up/Down to look vertically, Escape/Home to reset. Reduced-motion users see the neutral portrait. Touch input does not drive head tracking.
 
-## Deploy on Vercel
+## Page transitions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Internal page links use the GSAP curtain in `components/portfolio/PageTransition.tsx`: diagonal torn-paper layers, halftone artwork, hot pink and sliced destination typography. The curtain covers the current page before routing, then reveals the destination after it mounts. Same-page anchors scroll normally; external links and modifier clicks keep their default behavior. Browser back/forward navigation uses a shorter reveal, and reduced-motion preferences skip the effect.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The artwork is `public/transitions/ink-collage.png`; the concept and generation prompts are saved in `.codex-design-v5`.
+
+## Checks
+
+```sh
+npx tsc --noEmit
+npm run lint
+npm run build
+```
+
+Public project and article links are external. Email links open a draft in the visitor’s mail application. No form backend or booking calendar is configured.
