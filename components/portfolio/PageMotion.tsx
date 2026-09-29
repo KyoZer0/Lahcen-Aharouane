@@ -13,17 +13,26 @@ export function PageMotion({ children }: { children: ReactNode }) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
-          const tween = gsap.to(entry.target, { opacity: 1, y: 0, duration: .8, ease: "power3.out", clearProps: "transform,opacity", onComplete: () => { tweens.delete(tween); } });
+          if (entry.target.matches("h2, h3, .section-heading, .technology-heading")) {
+            // Apply the mask only after intersection; a fully clipped element cannot intersect.
+            gsap.set(entry.target, { clipPath: "inset(0% 0% 100% 0%)" });
+          }
+          const tween = gsap.to(entry.target, { opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)", duration: .95, ease: "power3.out", clearProps: "transform,opacity,clipPath", onComplete: () => { tweens.delete(tween); } });
           tweens.add(tween);
           observer.unobserve(entry.target);
         });
       }, { threshold: .08 });
       elements.forEach(element => {
         if (element.getBoundingClientRect().top < window.innerHeight) return;
-        gsap.set(element, { opacity: 0, y: 24 });
+        const heading = element.matches("h2, h3, .section-heading, .technology-heading");
+        gsap.set(element, { opacity: 0, y: heading ? 32 : 24 });
         observer.observe(element);
       });
-      return () => { observer.disconnect(); tweens.forEach(tween => tween.kill()); };
+      return () => {
+        observer.disconnect();
+        tweens.forEach(tween => tween.kill());
+        gsap.set(elements, { clearProps: "transform,opacity,clipPath" });
+      };
     }, root);
     return () => media.revert();
   }, []);

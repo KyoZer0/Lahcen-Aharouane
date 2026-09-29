@@ -31,6 +31,12 @@
 .transition-print { position: absolute; z-index: 3; font-weight: 400; opacity: 0; }
 .transition-signature { top: 26px; left: 30px; font-size: 38px; font-weight: 800; letter-spacing: -.065em; }
 .transition-credit { bottom: 26px; left: 30px; font-size: 21px; }
+.transition-ascii { position: absolute; z-index: 1; top: 7%; right: 5%; margin: 0; color: #f4f4f3; font-family: "Courier New", monospace; font-size: clamp(11px, 1.15vw, 20px); font-weight: 700; line-height: 1; white-space: pre; opacity: 0; pointer-events: none; }
+.transition-ascii-lines { position: absolute; z-index: 1; left: 7%; bottom: 15%; display: flex; flex-direction: column; gap: 9px; transform: rotate(-4deg); }
+.transition-ascii-line { display: block; color: #ff006c; font: 700 clamp(12px, 1.3vw, 22px)/1 "Courier New", monospace; white-space: pre; }
+[data-variant="poster"] .transition-ascii { color: #101010; top: 10%; }
+[data-variant="poster"] .transition-ascii-lines { left: auto; right: 7%; bottom: 11%; }
+[data-variant="signal"] .transition-ascii { top: 7%; right: auto; left: 3%; color: #f4f4f3; }
 .transition-title {
   position: absolute; z-index: 2; left: 6%; right: 6%; top: 50%;
   transform: translateY(-50%); display: grid; place-items: center; text-align: center; opacity: 0;
@@ -62,6 +68,11 @@ main[tabindex="-1"]:focus { outline: none; }
   [data-variant="signal"] .transition-slice { background-position: center; background-size: 100% 100%; }
   .transition-signature { top: 24px; left: 24px; font-size: 30px; }
   .transition-credit { bottom: max(24px, env(safe-area-inset-bottom)); left: 24px; font-size: 16px; }
+  .transition-ascii { top: 13%; right: 5%; font-size: 9px; }
+  [data-variant="poster"] .transition-ascii { top: 13%; }
+  [data-variant="signal"] .transition-ascii { top: 12%; left: 8%; }
+  .transition-ascii-lines, [data-variant="poster"] .transition-ascii-lines { left: 8%; right: auto; bottom: 18%; gap: 7px; }
+  .transition-ascii-line { font-size: 10px; }
   .transition-title, [data-variant="signal"] .transition-title { left: 7%; right: 7%; font-size: 26vw; }
   .transition-title[data-length="medium"], [data-variant="signal"] .transition-title[data-length="medium"] { font-size: 16vw; }
   .transition-title[data-length="long"], [data-variant="signal"] .transition-title[data-length="long"] { font-size: 11vw; line-height: 1; }

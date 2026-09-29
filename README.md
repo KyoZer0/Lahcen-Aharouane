@@ -38,6 +38,8 @@ Internal page links use the GSAP curtain in `components/portfolio/PageTransition
 
 The three artwork assets are in `public/transitions`; concepts, art direction, and generation prompts are saved in `.codex-design-v6`. Destination text stays in HTML so project names remain accurate.
 
+ASCII monograms, eyes, and skulls briefly decode inside the transition curtain. Navigation and project titles scramble on hover or keyboard focus, project images have a small pointer-following open label, and section headings reveal as they enter the viewport. These effects respect reduced-motion preferences and add no extra sections or controls.
+
 ## Search identity
 
 `lib/site.ts` sets `https://aharouane.com` as the canonical origin. The visible biography and Person structured data connect Aharouane, Ahrouan, Ahrwan, and أهروان to the same person. Every work page has its own title, description, canonical URL, and structured data. `/sitemap.xml` lists the ten public content URLs; `/robots.txt` points to it. `/opengraph-image` supplies the social preview card. Legacy `/about` and `/projects` routes permanently redirect to the corresponding destinations.

@@ -6,6 +6,42 @@ export const transitionVariants = [
 
 export type TransitionVariant = typeof transitionVariants[number];
 
+export const transitionAscii = {
+  diagonal: [
+    "##             /##/",
+    "##            /####/",
+    "##           /##  ##/",
+    "##          /##    ##/",
+    "##         /##########/",
+    "##        /##        ##/",
+    "######## /##          ##/",
+    "########/##            ##/",
+    "    //////  +  //////",
+  ].join("\n"),
+  poster: [
+    "       .:############:.       ",
+    "    .:##/            /##:.    ",
+    "  .:##/    .:####:.     /##:. ",
+    "<###/    .:##/  /##:.    /###>",
+    "  ':##.    ':####:'    .##:'  ",
+    "    ':##.            .##:'    ",
+    "       ':############:'       ",
+    "   +  / / / / / / / /  +     ",
+  ].join("\n"),
+  signal: [
+    "       .:########:.       ",
+    "     .##############.     ",
+    "    /####        ####/    ",
+    "   |###  X    X  ###|     ",
+    "   |###   /##/   ###|     ",
+    "    /###        ###/      ",
+    "     |## | || | ##|       ",
+    "      /##########/        ",
+    "       /# # # #/          ",
+    "    ///   +++   ///       ",
+  ].join("\n"),
+};
+
 // A shuffled bag gives every composition a turn, without immediate repeats.
 export function createTransitionPicker(random: () => number = Math.random) {
   let bag: TransitionVariant[] = [];

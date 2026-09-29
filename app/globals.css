@@ -121,6 +121,13 @@ h1, h2, h3, p { margin: 0; }
 .project-caption p { font-size: 14px; color: var(--muted); margin-top: 8px; }
 .project-arrow { font-size: 29px; font-weight: 300; }
 .project-link:hover .project-arrow { transform: translate(4px, -4px); }
+.scramble-text { position: relative; display: inline-block; white-space: pre; }
+.scramble-measure { visibility: hidden; }
+.scramble-visual { position: absolute; inset: 0; }
+.scramble-text[data-scrambling] .scramble-visual { color: #db005e; }
+.project-hover { position: relative; isolation: isolate; }
+.project-open { position: absolute; top: 0; left: 0; z-index: 2; translate: -50% -50%; display: inline-flex; gap: 10px; align-items: center; padding: 12px 15px; background: #101010; color: #f4f4f3; font-family: "Courier New", monospace; font-size: 13px; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; }
+.project-open > span { color: #ff006c; }
 .agent-art { background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; flex-direction: column; }
 .agent-art > span { font-size: clamp(50px, 7.5vw, 125px); letter-spacing: -.065em; font-weight: 300; line-height: 1.1; }
 .agent-art small { color: #adadad; font-size: clamp(17px, 1.7vw, 27px); font-weight: 300; margin-top: 12px; }
