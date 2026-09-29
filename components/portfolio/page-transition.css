@@ -59,7 +59,7 @@ main[tabindex="-1"]:focus { outline: none; }
 @media (max-width: 760px) {
   .transition-slice { background-position: 36% center; }
   [data-variant="poster"] .transition-slice { background-position: center; }
-  [data-variant="signal"] .transition-slice { background-position: 55% center; }
+  [data-variant="signal"] .transition-slice { background-position: center; background-size: 100% 100%; }
   .transition-signature { top: 24px; left: 24px; font-size: 30px; }
   .transition-credit { bottom: max(24px, env(safe-area-inset-bottom)); left: 24px; font-size: 16px; }
   .transition-title, [data-variant="signal"] .transition-title { left: 7%; right: 7%; font-size: 26vw; }

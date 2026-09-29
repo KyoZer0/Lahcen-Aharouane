@@ -1,6 +1,6 @@
 # Lahcen Aharouane — Portfolio
 
-A minimal personal portfolio built with Next.js 14, React, TypeScript, local PP Radio Grotesk fonts, and GSAP.
+A minimal personal portfolio built with Next.js 15.5.26, React 19, TypeScript, local PP Radio Grotesk fonts, and GSAP.
 
 ## Run
 
@@ -34,9 +34,19 @@ Keyboard: focus the portrait and use Left/Right to cycle, Up/Down to look vertic
 
 ## Page transitions
 
-Internal page links use the GSAP curtain in `components/portfolio/PageTransition.tsx`: diagonal torn-paper layers, halftone artwork, hot pink and sliced destination typography. The curtain covers the current page before routing, then reveals the destination after it mounts. Same-page anchors scroll normally; external links and modifier clicks keep their default behavior. Browser back/forward navigation uses a shorter reveal, and reduced-motion preferences skip the effect.
+Internal page links use the GSAP curtain in `components/portfolio/PageTransition.tsx`: three street-poster compositions inspired by Watch Dogs 2, with torn diagonals, horizontal print bands, and vertical signal cuts. Halftone artwork, hot pink, and sliced destination typography give each sequence a shared direction. A shuffled bag uses all three before repeating, prevents consecutive repeats, and varies the direction. Sequences take approximately 2.6 seconds, including a readable poster hold. The curtain covers the current page before routing, then reveals the destination after it mounts. Same-page anchors scroll normally; external links and modifier clicks keep their default behavior. Browser back/forward navigation uses a shorter reveal, and reduced-motion preferences skip the effect.
 
-The artwork is `public/transitions/ink-collage.png`; the concept and generation prompts are saved in `.codex-design-v5`.
+The three artwork assets are in `public/transitions`; concepts, art direction, and generation prompts are saved in `.codex-design-v6`. Destination text stays in HTML so project names remain accurate.
+
+## Search identity
+
+`lib/site.ts` sets `https://aharouane.com` as the canonical origin. The visible biography and Person structured data connect Aharouane, Ahrouan, Ahrwan, and أهروان to the same person. Every work page has its own title, description, canonical URL, and structured data. `/sitemap.xml` lists the ten public content URLs; `/robots.txt` points to it. `/opengraph-image` supplies the social preview card. Legacy `/about` and `/projects` routes permanently redirect to the corresponding destinations.
+
+After deployment, verify the domain in Google Search Console and submit `https://aharouane.com/sitemap.xml`. Canonical URLs and structured data help discovery; indexing and search position are determined by search engines and cannot be guaranteed.
+
+## Dependency security
+
+Next.js 15.5.26 includes the fix for GHSA-2xp9-vwfh-vxw4 (AVIF image optimization). The lockfile also updates Sharp and compatible transitive dependencies. The PostCSS override keeps Next.js and the build pipeline on the patched PostCSS 8 version until the framework updates its own pin. Run `npm audit` periodically; the verified audit had zero reported vulnerabilities on 2026-09-29.
 
 ## Checks
 

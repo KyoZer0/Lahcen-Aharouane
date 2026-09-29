@@ -9,13 +9,17 @@ import { pageMetadata, absoluteUrl, personId } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
 
 export function generateStaticParams() { return projects.map(project => ({ slug: project.slug })); }
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const project = projects.find(item => item.slug === params.slug);
+type ProjectParams = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: ProjectParams): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find(item => item.slug === slug);
   if (!project) return { title: "Project not found", robots: { index: false, follow: true } };
   return pageMetadata(project.title, `${project.summary} ${project.category} project with contributions by Lahcen Aharouane.`, `/projects/${project.slug}`);
 }
-export default function ProjectPage({ params }: { params: { slug: string } }) {
-  const project = projects.find(item => item.slug === params.slug);
+export default async function ProjectPage({ params }: ProjectParams) {
+  const { slug } = await params;
+  const project = projects.find(item => item.slug === slug);
   if (!project) notFound();
   const nextProject = projects[(projects.indexOf(project) + 1) % projects.length];
   return <>
