@@ -46,16 +46,22 @@ h1, h2, h3, p { margin: 0; }
 .hero-explore:hover span { transform: translateY(5px); }
 .portrait-frame { position: absolute; inset: 0; overflow: clip; pointer-events: none; }
 .portrait-look { position: absolute; inset: 0; --head-seam-start: 40.7%; --head-seam-end: 41.2%; }
-.portrait-look[data-look="rider"] { opacity: 0; visibility: hidden; }
+.portrait-look:not([data-look="suit"]) { opacity: 0; visibility: hidden; }
+.portrait-look[data-look="metal"] { --head-seam-start: 34.1%; --head-seam-end: 34.6%; }
 .portrait-toggle { position: absolute; z-index: 3; top: 13%; bottom: 0; left: 44%; right: 0; border: 0; padding: 0; background: transparent; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .portrait-toggle:focus-visible { outline: 1px dashed #888; outline-offset: -15px; }
 .portrait-toggle[aria-busy="true"] { cursor: progress; }
 .portrait-caption { position: absolute; right: var(--gutter); bottom: 35px; display: flex; gap: 18px; padding: 9px 12px; background: rgb(244 244 243 / .93); font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .portrait-caption > span:last-child { color: #666; }
-.portrait-sweep { position: absolute; z-index: 2; left: 43%; right: -5%; height: 1px; background: #ff006c; opacity: 0; visibility: hidden; transform: rotate(-6deg); pointer-events: none; }
-.portrait-sweep span { position: absolute; right: 14%; bottom: 8px; color: #ff006c; font: 12px/1 "Courier New", monospace; letter-spacing: .18em; }
+.portrait-transition { position: absolute; z-index: 2; inset: 0; opacity: 0; visibility: hidden; overflow: clip; pointer-events: none; }
+.portrait-tear { position: absolute; left: -2%; width: 104%; top: calc(var(--strip) * 100% / 7 - 12px); height: calc(100% / 7 + 24px); background: var(--paper); transform: translateX(110%); clip-path: polygon(0 6px, 8% 3px, 17% 8px, 29% 0, 42% 7px, 58% 3px, 73% 9px, 88% 2px, 100% 6px, 100% calc(100% - 4px), 89% calc(100% - 9px), 71% calc(100% - 2px), 52% calc(100% - 7px), 34% 100%, 18% calc(100% - 8px), 0 calc(100% - 3px)); }
+.portrait-tear-print { position: absolute; inset: 5px 0 5px 44%; background: #242424; color: #f4f4f3; overflow: hidden; background-image: radial-gradient(#f4f4f3 1px, transparent 1px); background-size: 5px 5px; }
+.portrait-tear:nth-child(2n) .portrait-tear-print { left: 51%; background-color: #f4f4f3; color: #242424; background-image: repeating-linear-gradient(-30deg, #242424 0 1px, transparent 1px 7px); }
+.portrait-tear:nth-child(3n) .portrait-tear-print { left: 58%; background: #ff006c; color: #202020; }
+.portrait-tear-print span { position: absolute; right: 10%; top: 50%; transform: translateY(-50%); padding: 8px 14px; background: inherit; background-image: none; font: 700 clamp(16px, 2.5vw, 38px)/1 "Courier New", monospace; letter-spacing: -.06em; white-space: nowrap; }
 .portrait-canvas { position: absolute; height: 265%; top: -43.5%; left: 70.5%; aspect-ratio: 3 / 4; transform: translateX(-50%); pointer-events: none; filter: grayscale(1); isolation: isolate; }
 .portrait-look[data-look="rider"] .portrait-canvas { height: 185%; top: -24%; }
+.portrait-look[data-look="metal"] .portrait-canvas { height: 132%; top: 3%; }
 .portrait-body, .portrait-heads { position: absolute; inset: 0; }
 .portrait-base, .portrait-head { object-fit: fill; user-select: none; pointer-events: none; }
 .portrait-body { mask-image: linear-gradient(to bottom, transparent var(--head-seam-start), #000 var(--head-seam-end)); }
@@ -80,6 +86,12 @@ h1, h2, h3, p { margin: 0; }
 .portrait-look[data-look="rider"] .portrait-head[data-head="bottom-left"] { transform: translate(-.276%, .069%); }
 .portrait-look[data-look="rider"] .portrait-head[data-head="left"] { transform: translate(-.276%, .138%); }
 .portrait-look[data-look="rider"] .portrait-head[data-head="top-left"] { transform: translate(-1.289%, -.691%); }
+/* Keep the approved metal jacket fixed at the shirt neckline. */
+.portrait-look[data-look="metal"] .portrait-head[data-head="top-right"],
+.portrait-look[data-look="metal"] .portrait-head[data-head="bottom-right"],
+.portrait-look[data-look="metal"] .portrait-head[data-head="left"] { transform: translate(-.092%, 0); }
+.portrait-look[data-look="metal"] .portrait-head[data-head="right"] { transform: translate(-.184%, 0); }
+.portrait-look[data-look="metal"] .portrait-head[data-head="top-left"] { transform: translate(.092%, -.069%); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .skip-link { position: fixed; top: 8px; left: 12px; z-index: 30; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); background: var(--ink); color: white; }
 .skip-link:focus { width: auto; height: auto; clip-path: none; padding: 12px 18px; }
@@ -112,9 +124,11 @@ h1, h2, h3, p { margin: 0; }
   .hero-explore { top: 382px; bottom: auto; left: var(--gutter); font-size: 14px; }
   .portrait-canvas { height: 1450px; top: 123px; left: 61%; }
   .portrait-look[data-look="rider"] .portrait-canvas { height: 840px; top: 250px; left: 54%; }
+  .portrait-look[data-look="metal"] .portrait-canvas { height: 640px; top: 370px; left: 52%; }
   .portrait-toggle { top: 430px; left: 0; }
   .portrait-caption { bottom: 20px; right: 20px; gap: 14px; font-size: 11px; }
-  .portrait-sweep { left: -5%; }
+  .portrait-transition { top: 415px; }
+  .portrait-tear-print, .portrait-tear:nth-child(2n) .portrait-tear-print, .portrait-tear:nth-child(3n) .portrait-tear-print { left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

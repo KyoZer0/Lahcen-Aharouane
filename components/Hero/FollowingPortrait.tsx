@@ -3,25 +3,31 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { getHeadDirection, headDirections, type HeadDirection } from "@/lib/head-direction";
-import { PortraitLook, type PortraitLookId } from "./PortraitLook";
+import { PortraitLook, portraitLookOrder, portraitLooks, type PortraitLookId } from "./PortraitLook";
+import { animatePortraitChange, PortraitTransition } from "./PortraitTransition";
 
 export function FollowingPortrait() {
   const frameRef = useRef<HTMLDivElement>(null);
   const busyRef = useRef(false);
   const currentLook = useRef<PortraitLookId>("suit");
+  const lastTransition = useRef(-1);
   const [look, setLook] = useState<PortraitLookId>("suit");
   const [pending, setPending] = useState<PortraitLookId | null>(null);
-  const [riderMounted, setRiderMounted] = useState(false);
+  const [mounted, setMounted] = useState<Set<PortraitLookId>>(() => new Set(["suit"]));
   const [ready, setReady] = useState<Set<PortraitLookId>>(() => new Set());
   const [error, setError] = useState("");
   const [direction, setDirection] = useState<HeadDirection>("neutral");
   const [reducedMotion, setReducedMotion] = useState(false);
+  const nextLook = portraitLookOrder[(portraitLookOrder.indexOf(look) + 1) % portraitLookOrder.length];
+  const pendingReady = pending !== null && ready.has(pending);
 
   const markReady = useCallback((id: PortraitLookId) => {
     setReady(previous => previous.has(id) ? previous : new Set(previous).add(id));
   }, []);
   const loadFailed = useCallback((id: PortraitLookId) => {
-    if (id === "rider") setRiderMounted(false);
+    // Never remove the visible look if a background frame fails to load.
+    if (id === currentLook.current) return;
+    setMounted(previous => { const next = new Set(previous); next.delete(id); return next; });
     setReady(previous => { const next = new Set(previous); next.delete(id); return next; });
     setPending(null);
     busyRef.current = false;
@@ -42,7 +48,7 @@ export function FollowingPortrait() {
       if (!canvas || frameRef.current.getBoundingClientRect().bottom < 0) return;
       const rect = canvas.getBoundingClientRect();
       const dx = position.x - (rect.left + rect.width * .50);
-      const dy = position.y - (rect.top + rect.height * .30);
+      const dy = position.y - (rect.top + rect.height * portraitLooks[currentLook.current].headY);
       setDirection(previous => getHeadDirection(dx, dy, previous));
     };
     const onPointerMove = (event: PointerEvent) => {
@@ -76,65 +82,51 @@ export function FollowingPortrait() {
 
   // Keep the current portrait visible until every frame of the next look is decoded.
   useEffect(() => {
-    if (!pending || ready.has(pending)) return;
+    if (!pending || pendingReady) return;
     const timer = window.setTimeout(() => loadFailed(pending), 15000);
     return () => window.clearTimeout(timer);
-  }, [pending, ready, loadFailed]);
+  }, [pending, pendingReady, loadFailed]);
 
   useLayoutEffect(() => {
-    if (!pending || !ready.has(pending) || !frameRef.current) return;
+    if (!pending || !pendingReady || !frameRef.current) return;
     const frame = frameRef.current;
     const outgoing = frame.querySelector<HTMLElement>(`[data-look="${look}"]`);
     const incoming = frame.querySelector<HTMLElement>(`[data-look="${pending}"]`);
-    const sweep = frame.querySelector<HTMLElement>(".portrait-sweep");
-    if (!outgoing || !incoming || !sweep) return;
+    if (!outgoing || !incoming) return;
     const finish = () => {
-      gsap.set(outgoing, { autoAlpha: 0, clearProps: "clipPath,zIndex" });
-      gsap.set(incoming, { autoAlpha: 1, clearProps: "clipPath,zIndex" });
-      gsap.set(sweep, { autoAlpha: 0 });
+      gsap.set(outgoing, { autoAlpha: 0 });
+      gsap.set(incoming, { autoAlpha: 1 });
       currentLook.current = pending;
       setLook(pending);
       setPending(null);
       busyRef.current = false;
     };
     if (reducedMotion) { finish(); return; }
-    const progress = { value: 0 };
-    const reverse = pending === "suit";
-    gsap.set(incoming, { autoAlpha: 1, zIndex: 1 });
-    gsap.set(outgoing, { autoAlpha: 1, zIndex: 0 });
-    const draw = () => {
-      const y = reverse ? -20 + progress.value * 140 : 120 - progress.value * 140;
-      const upper = `polygon(0% 0%, 100% 0%, 100% ${y - 8}%, 0% ${y + 8}%)`;
-      const lower = `polygon(0% ${y + 8}%, 100% ${y - 8}%, 100% 100%, 0% 100%)`;
-      incoming.style.clipPath = reverse ? upper : lower;
-      outgoing.style.clipPath = reverse ? lower : upper;
-      sweep.style.top = `${y}%`;
-    };
-    draw();
-    const timeline = gsap.timeline({ onComplete: finish });
-    timeline.to(progress, { value: 1, duration: 1.25, ease: "power2.inOut", onUpdate: draw }, 0)
-      .to(sweep, { autoAlpha: .65, duration: .22 }, .12)
-      .to(sweep, { autoAlpha: 0, duration: .3 }, .92);
-    return () => { timeline.kill(); };
-  }, [pending, ready, look, reducedMotion]);
+    const variants = [0, 1, 2].filter(value => value !== lastTransition.current);
+    const variant = variants[Math.floor(Math.random() * variants.length)];
+    lastTransition.current = variant;
+    frame.dataset.transition = String(variant);
+    return animatePortraitChange(frame, outgoing, incoming, variant, finish);
+  }, [pending, pendingReady, look, reducedMotion]);
 
   const switchLook = () => {
     if (busyRef.current) return;
     busyRef.current = true;
     setError("");
     setDirection("neutral");
-    setRiderMounted(true);
-    setPending(look === "suit" ? "rider" : "suit");
+    setMounted(previous => new Set(previous).add(nextLook));
+    setPending(nextLook);
   };
-  const warmRider = () => { if (!error) setRiderMounted(true); };
+  const warmNextLook = () => {
+    if (!error && !busyRef.current) setMounted(previous => previous.has(nextLook) ? previous : new Set(previous).add(nextLook));
+  };
 
   return <div ref={frameRef} className="portrait-frame" data-look={look} data-direction={direction} data-changing={pending !== null}>
-    <PortraitLook look="suit" direction={direction} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} />
-    {riderMounted ? <PortraitLook look="rider" direction={direction} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} /> : null}
-    <div className="portrait-sweep" aria-hidden="true"><span>{"///// + /////"}</span></div>
-    <button type="button" className="portrait-toggle" aria-label={`Switch portrait to ${look === "suit" ? "rider" : "suit"} look`}
-      aria-describedby="portrait-keyboard-help" aria-pressed={look === "rider"} aria-busy={pending !== null} aria-disabled={pending !== null}
-      onClick={switchLook} onPointerEnter={warmRider} onFocus={warmRider} onBlur={() => setDirection("neutral")}
+    {portraitLookOrder.map(id => mounted.has(id) ? <PortraitLook key={id} look={id} direction={id === look ? direction : "neutral"} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} /> : null)}
+    <PortraitTransition />
+    <button type="button" className="portrait-toggle" aria-label={`Switch portrait to ${nextLook} look`}
+      aria-describedby="portrait-keyboard-help" aria-busy={pending !== null} aria-disabled={pending !== null}
+      onClick={switchLook} onPointerEnter={warmNextLook} onFocus={warmNextLook} onBlur={() => setDirection("neutral")}
       onKeyDown={event => {
         if (busyRef.current || reducedMotion) return;
         if (event.key === "Escape" || event.key === "Home") {
@@ -150,9 +142,9 @@ export function FollowingPortrait() {
           event.preventDefault(); setDirection(event.key === "ArrowUp" ? "top" : "bottom");
         }
       }}>
-      <span className="portrait-caption" aria-hidden="true"><span>{look === "suit" ? "On duty" : "Off duty"}</span><span>{error ? "Try again ↗" : pending ? ready.has(pending) ? "Changing look…" : "Loading rider…" : "Click to change ↗"}</span></span>
+      <span className="portrait-caption" aria-hidden="true"><span>{portraitLooks[look].caption}</span><span>{error ? "Try again ↗" : pending ? pendingReady ? "Changing look…" : `Loading ${pending}…` : "Click to change ↗"}</span></span>
     </button>
-    <span className="sr-only" id="portrait-keyboard-help">Click or press Enter or Space to change between the original suit and the LS2 rider jacket. Use the arrow keys to change head direction. Press Escape to look forward.</span>
-    <span className="sr-only" role="status">{error || (pending ? "Preparing the next portrait" : look === "rider" ? "Rider look: LS2 jacket and gloves, adjusting a glove strap." : "Original suit portrait.")}</span>
+    <span className="sr-only" id="portrait-keyboard-help">Click or press Enter or Space to cycle through the suit, LS2 rider, and metal jacket with headphones. Use the arrow keys to change head direction. Press Escape to look forward.</span>
+    <span className="sr-only" role="status">{error || (pending ? "Preparing the next portrait" : portraitLooks[look].description)}</span>
   </div>;
 }
