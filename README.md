@@ -32,6 +32,10 @@ The suit is a single fixed image. Only the masked head layers crossfade with GSA
 
 Keyboard: focus the portrait and use Left/Right to cycle, Up/Down to look vertically, Escape/Home to reset. Reduced-motion users see the neutral portrait. Touch input does not drive head tracking.
 
+Click or tap the portrait (Enter/Space on the keyboard) to change between the original suit and the rider look. The rider wears an LS2 jacket and gloves, holding the approved glove-adjusting pose, with no helmet. Its neutral and eight separately generated head directions are in `public/generated/portrait-looks/rider-gloves`, alongside the exact generation prompts. Only the masked head layers move; the torso and gloves always come from the neutral image. Collar registration is scoped separately for each look.
+
+The rider images load on pointer or keyboard intent, or on the first tap. The current portrait stays visible until the next look is ready, then a 1.25-second diagonal wipe changes the outfit, with a brief pink/ASCII accent. Repeat clicks during the change are ignored. Reduced-motion users can still switch looks instantly. An image failure preserves the current look and exposes a retry hint.
+
 ## Page transitions
 
 Internal page links use the GSAP curtain in `components/portfolio/PageTransition.tsx`: three street-poster compositions inspired by Watch Dogs 2, with torn diagonals, horizontal print bands, and vertical signal cuts. Halftone artwork, hot pink, and sliced destination typography give each sequence a shared direction. A shuffled bag uses all three before repeating, prevents consecutive repeats, and varies the direction. Sequences take approximately 2.6 seconds, including a readable poster hold. The curtain covers the current page before routing, then reveals the destination after it mounts. Same-page anchors scroll normally; external links and modifier clicks keep their default behavior. Browser back/forward navigation uses a shorter reveal, and reduced-motion preferences skip the effect.
