@@ -5,12 +5,16 @@ import { getHeadDirection, headDirections, type HeadDirection } from "@/lib/head
 import { PortraitLook, portraitLookOrder, portraitLooks, type PortraitLookId } from "./PortraitLook";
 import { animatePortraitChange, PortraitTransition } from "./PortraitTransition";
 
-export function FollowingPortrait() {
+type Props = {
+  look: PortraitLookId;
+  onLookChange: (look: PortraitLookId) => void;
+};
+
+export function FollowingPortrait({ look, onLookChange }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const busyRef = useRef(false);
-  const currentLook = useRef<PortraitLookId>("suit");
+  const currentLook = useRef<PortraitLookId>(look);
   const lastTransition = useRef(-1);
-  const [look, setLook] = useState<PortraitLookId>("suit");
   const [pending, setPending] = useState<PortraitLookId | null>(null);
   const [mounted, setMounted] = useState<Set<PortraitLookId>>(() => new Set(["suit"]));
   const [ready, setReady] = useState<Set<PortraitLookId>>(() => new Set());
@@ -92,7 +96,8 @@ export function FollowingPortrait() {
     let settled = false;
     const reveal = () => {
       currentLook.current = pending;
-      setLook(pending);
+      // Commit the portrait and its headline together while the paper covers it.
+      onLookChange(pending);
     };
     const finish = () => {
       if (settled) return;
@@ -116,7 +121,7 @@ export function FollowingPortrait() {
       window.clearTimeout(deadline);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [pending, pendingReady, reducedMotion]);
+  }, [pending, pendingReady, reducedMotion, onLookChange]);
 
   const switchLook = () => {
     if (busyRef.current) return;
