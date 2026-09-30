@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { getHeadDirection, headDirections, type HeadDirection } from "@/lib/head-direction";
 import { PortraitLook, portraitLookOrder, portraitLooks, type PortraitLookId } from "./PortraitLook";
 import { animatePortraitChange, PortraitTransition } from "./PortraitTransition";
+import { heroPersonas } from "./hero-personas";
 
 type Props = {
   look: PortraitLookId;
@@ -12,6 +13,7 @@ type Props = {
 
 export function FollowingPortrait({ look, onLookChange }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
+  const transitionRef = useRef<HTMLDivElement>(null);
   const busyRef = useRef(false);
   const currentLook = useRef<PortraitLookId>(look);
   const lastTransition = useRef(-1);
@@ -91,7 +93,7 @@ export function FollowingPortrait({ look, onLookChange }: Props) {
   }, [pending, pendingReady, loadFailed]);
 
   useLayoutEffect(() => {
-    if (!pending || !pendingReady || !frameRef.current) return;
+    if (!pending || !pendingReady || !frameRef.current || !transitionRef.current) return;
     const frame = frameRef.current;
     let settled = false;
     const reveal = () => {
@@ -111,10 +113,10 @@ export function FollowingPortrait({ look, onLookChange }: Props) {
     const variant = variants[Math.floor(Math.random() * variants.length)];
     lastTransition.current = variant;
     frame.dataset.transition = String(variant);
-    const cancelAnimation = animatePortraitChange(frame, variant, reveal, finish);
+    const cancelAnimation = animatePortraitChange(transitionRef.current, variant, reveal, finish);
     // Background tabs and interrupted animation ticks must not leave the UI busy.
     const onVisibilityChange = () => { if (document.hidden) finish(); };
-    const deadline = window.setTimeout(finish, 3000);
+    const deadline = window.setTimeout(finish, 4000);
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       cancelAnimation();
@@ -137,7 +139,7 @@ export function FollowingPortrait({ look, onLookChange }: Props) {
 
   return <div ref={frameRef} className="portrait-frame" data-look={look} data-direction={direction} data-changing={pending !== null}>
     {portraitLookOrder.map(id => mounted.has(id) ? <PortraitLook key={id} look={id} active={id === look} direction={id === look ? direction : "neutral"} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} /> : null)}
-    <PortraitTransition />
+    <PortraitTransition ref={transitionRef} label={heroPersonas[pending ?? look].role} />
     <button type="button" className="portrait-toggle" aria-label={`Switch portrait to ${nextLook} look`}
       aria-describedby="portrait-keyboard-help" aria-busy={pending !== null} aria-disabled={pending !== null}
       onClick={switchLook} onPointerEnter={warmNextLook} onFocus={warmNextLook} onBlur={() => setDirection("neutral")}
@@ -156,7 +158,7 @@ export function FollowingPortrait({ look, onLookChange }: Props) {
           event.preventDefault(); setDirection(event.key === "ArrowUp" ? "top" : "bottom");
         }
       }}>
-      <span className="portrait-caption" aria-hidden="true"><span>{portraitLooks[look].caption}</span><span>{error ? "Try again ↗" : pending ? pendingReady ? "Changing look…" : `Loading ${pending}…` : "Click to change ↗"}</span></span>
+      <span className="portrait-caption" aria-hidden="true"><span>{portraitLooks[look].caption} · 0{portraitLookOrder.indexOf(look) + 1}/03</span><span>{error ? "Try again ↗" : pending ? pendingReady ? "Changing look…" : `Loading ${pending}…` : "Click to change ↗"}</span></span>
     </button>
     <span className="sr-only" id="portrait-keyboard-help">Click or press Enter or Space to cycle through the suit, LS2 rider, and metal jacket with headphones. Use the arrow keys to change head direction. Press Escape to look forward.</span>
     <span className="sr-only" role="status">{error || (pending ? "Preparing the next portrait" : portraitLooks[look].description)}</span>

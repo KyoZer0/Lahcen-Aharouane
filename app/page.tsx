@@ -9,7 +9,7 @@ import { Contact } from "@/components/portfolio/Contact";
 import { PageMotion } from "@/components/portfolio/PageMotion";
 import { StructuredData } from "@/components/StructuredData";
 import { pageMetadata, profileSchema } from "@/lib/seo";
-import { site } from "@/lib/site";
+import { contact, site } from "@/lib/site";
 
 export const metadata = {
   ...pageMetadata("Digital Product Developer", site.description, "/"),
@@ -25,16 +25,15 @@ export default function Home() {
         <HeroEntrance>
           <HeroIdentity />
           <SiteHeader />
-          <span className="hero-year" aria-hidden="true" data-intro>2026</span>
           <div className="hero-facts" data-intro>
             <p>CTO<span>At Hikaritech</span></p>
             <p>Casablanca<span>Morocco</span></p>
           </div>
-          <div className="hero-summary" data-intro>
-            <p className="hero-introduction">— I’m Lahcen Aharouane.</p>
-            <p className="hero-description">I build thoughtful digital experiences.</p>
-          </div>
           <a className="hero-explore" href="#portfolio" data-intro>Explore my work <span aria-hidden="true">↓</span></a>
+          <div className="hero-socials" data-intro>
+            <a className="text-link" href={contact.linkedin}>LinkedIn <span aria-hidden="true">↗</span></a>
+            <a className="text-link" href={contact.github}>GitHub <span aria-hidden="true">↗</span></a>
+          </div>
         </HeroEntrance>
         <PageMotion><SelectedWork /><About /><Services /><Journal /><Contact /></PageMotion>
       </main>
