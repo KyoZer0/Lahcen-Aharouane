@@ -45,8 +45,8 @@ h1, h2, h3, p { margin: 0; }
 .hero-explore span { margin-left: 14px; font-size: 1.3em; }
 .hero-explore:hover span { transform: translateY(5px); }
 .portrait-frame { position: absolute; inset: 0; overflow: clip; pointer-events: none; }
-.portrait-look { position: absolute; inset: 0; --head-seam-start: 40.7%; --head-seam-end: 41.2%; }
-.portrait-look:not([data-look="suit"]) { opacity: 0; visibility: hidden; }
+.portrait-look { position: absolute; inset: 0; opacity: 0; visibility: hidden; --head-seam-start: 40.7%; --head-seam-end: 41.2%; }
+.portrait-look[data-active="true"] { opacity: 1; visibility: visible; }
 .portrait-look[data-look="metal"] { --head-seam-start: 34.1%; --head-seam-end: 34.6%; }
 .portrait-toggle { position: absolute; z-index: 3; top: 13%; bottom: 0; left: 44%; right: 0; border: 0; padding: 0; background: transparent; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .portrait-toggle:focus-visible { outline: 1px dashed #888; outline-offset: -15px; }
@@ -127,7 +127,7 @@ h1, h2, h3, p { margin: 0; }
   .portrait-look[data-look="metal"] .portrait-canvas { height: 640px; top: 370px; left: 52%; }
   .portrait-toggle { top: 430px; left: 0; }
   .portrait-caption { bottom: 20px; right: 20px; gap: 14px; font-size: 11px; }
-  .portrait-transition { top: 415px; }
+  .portrait-transition { top: 395px; }
   .portrait-tear-print, .portrait-tear:nth-child(2n) .portrait-tear-print, .portrait-tear:nth-child(3n) .portrait-tear-print { left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {

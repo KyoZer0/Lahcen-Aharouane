@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
 import { getHeadDirection, headDirections, type HeadDirection } from "@/lib/head-direction";
 import { PortraitLook, portraitLookOrder, portraitLooks, type PortraitLookId } from "./PortraitLook";
 import { animatePortraitChange, PortraitTransition } from "./PortraitTransition";
@@ -44,7 +43,7 @@ export function FollowingPortrait() {
     const update = () => {
       frame = 0;
       if (!position || !frameRef.current || motion.matches || !pointer.matches || busyRef.current) return;
-      const canvas = frameRef.current.querySelector<HTMLElement>(`[data-look="${currentLook.current}"] .portrait-canvas`);
+      const canvas = frameRef.current.querySelector<HTMLElement>(`.portrait-look[data-look="${currentLook.current}"] .portrait-canvas`);
       if (!canvas || frameRef.current.getBoundingClientRect().bottom < 0) return;
       const rect = canvas.getBoundingClientRect();
       const dx = position.x - (rect.left + rect.width * .50);
@@ -80,7 +79,7 @@ export function FollowingPortrait() {
     };
   }, []);
 
-  // Keep the current portrait visible until every frame of the next look is decoded.
+  // Keep the current portrait visible until the next neutral image is decoded.
   useEffect(() => {
     if (!pending || pendingReady) return;
     const timer = window.setTimeout(() => loadFailed(pending), 15000);
@@ -90,14 +89,15 @@ export function FollowingPortrait() {
   useLayoutEffect(() => {
     if (!pending || !pendingReady || !frameRef.current) return;
     const frame = frameRef.current;
-    const outgoing = frame.querySelector<HTMLElement>(`[data-look="${look}"]`);
-    const incoming = frame.querySelector<HTMLElement>(`[data-look="${pending}"]`);
-    if (!outgoing || !incoming) return;
-    const finish = () => {
-      gsap.set(outgoing, { autoAlpha: 0 });
-      gsap.set(incoming, { autoAlpha: 1 });
+    let settled = false;
+    const reveal = () => {
       currentLook.current = pending;
       setLook(pending);
+    };
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      reveal();
       setPending(null);
       busyRef.current = false;
     };
@@ -106,8 +106,17 @@ export function FollowingPortrait() {
     const variant = variants[Math.floor(Math.random() * variants.length)];
     lastTransition.current = variant;
     frame.dataset.transition = String(variant);
-    return animatePortraitChange(frame, outgoing, incoming, variant, finish);
-  }, [pending, pendingReady, look, reducedMotion]);
+    const cancelAnimation = animatePortraitChange(frame, variant, reveal, finish);
+    // Background tabs and interrupted animation ticks must not leave the UI busy.
+    const onVisibilityChange = () => { if (document.hidden) finish(); };
+    const deadline = window.setTimeout(finish, 3000);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      cancelAnimation();
+      window.clearTimeout(deadline);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [pending, pendingReady, reducedMotion]);
 
   const switchLook = () => {
     if (busyRef.current) return;
@@ -122,7 +131,7 @@ export function FollowingPortrait() {
   };
 
   return <div ref={frameRef} className="portrait-frame" data-look={look} data-direction={direction} data-changing={pending !== null}>
-    {portraitLookOrder.map(id => mounted.has(id) ? <PortraitLook key={id} look={id} direction={id === look ? direction : "neutral"} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} /> : null)}
+    {portraitLookOrder.map(id => mounted.has(id) ? <PortraitLook key={id} look={id} active={id === look} direction={id === look ? direction : "neutral"} reducedMotion={reducedMotion} onReady={markReady} onError={loadFailed} /> : null)}
     <PortraitTransition />
     <button type="button" className="portrait-toggle" aria-label={`Switch portrait to ${nextLook} look`}
       aria-describedby="portrait-keyboard-help" aria-busy={pending !== null} aria-disabled={pending !== null}

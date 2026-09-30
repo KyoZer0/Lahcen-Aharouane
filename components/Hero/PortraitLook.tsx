@@ -15,13 +15,14 @@ export const portraitLooks = {
 const poses = ["neutral", ...headDirections] as const;
 type Props = {
   look: PortraitLookId;
+  active: boolean;
   direction: HeadDirection;
   reducedMotion: boolean;
   onReady: (look: PortraitLookId) => void;
   onError: (look: PortraitLookId) => void;
 };
 
-export function PortraitLook({ look, direction, reducedMotion, onReady, onError }: Props) {
+export function PortraitLook({ look, active, direction, reducedMotion, onReady, onError }: Props) {
   const headsRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState<Set<string>>(() => new Set());
   const reported = useRef(false);
@@ -29,7 +30,9 @@ export function PortraitLook({ look, direction, reducedMotion, onReady, onError 
   const { directory, neutral } = portraitLooks[look];
 
   useEffect(() => {
-    if (loaded.size !== poses.length + 1 || reported.current) return;
+    // The neutral portrait is enough to switch safely. Direction frames can decode
+    // in the background and already fall back to neutral until they are ready.
+    if (!loaded.has("body") || !loaded.has("neutral") || reported.current) return;
     reported.current = true;
     onReady(look);
   }, [loaded, look, onReady]);
@@ -46,7 +49,7 @@ export function PortraitLook({ look, direction, reducedMotion, onReady, onError 
   }, [shownDirection, reducedMotion]);
 
   const markLoaded = (key: string) => setLoaded(previous => previous.has(key) ? previous : new Set(previous).add(key));
-  return <div className="portrait-look" data-look={look} data-direction={shownDirection} aria-hidden="true">
+  return <div className="portrait-look" data-look={look} data-active={active} data-direction={shownDirection} aria-hidden="true">
     <div className="portrait-canvas">
       <div className="portrait-body">
         <Image src={`${directory}/${neutral}.png`} alt="" fill priority={look === "suit"} loading={look === "suit" ? undefined : "eager"} quality={90}
@@ -55,7 +58,7 @@ export function PortraitLook({ look, direction, reducedMotion, onReady, onError 
       <div className="portrait-heads" ref={headsRef}>
         {poses.map(pose => <Image key={pose} src={`${directory}/${pose === "neutral" ? neutral : pose}.png`} alt="" fill quality={90}
           sizes="(max-width: 760px) 1000px, 2000px" loading="eager" className="portrait-head" data-head={pose}
-          onLoad={() => markLoaded(pose)} onError={() => onError(look)} />)}
+          onLoad={() => markLoaded(pose)} onError={pose === "neutral" ? () => onError(look) : undefined} />)}
       </div>
     </div>
   </div>;

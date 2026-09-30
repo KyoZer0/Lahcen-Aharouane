@@ -15,16 +15,16 @@ export function PortraitTransition() {
 }
 
 /** Cover the whole portrait before swapping, so differently sized looks never ghost. */
-export function animatePortraitChange(frame: HTMLElement, outgoing: HTMLElement, incoming: HTMLElement, variant: number, onComplete: () => void) {
+export function animatePortraitChange(frame: HTMLElement, variant: number, onCovered: () => void, onComplete: () => void) {
   const overlay = frame.querySelector<HTMLElement>(".portrait-transition")!;
   const pieces = Array.from(overlay.querySelectorAll<HTMLElement>(".portrait-tear"));
   const order = variant === 0 ? [0, 1, 2, 3, 4, 5, 6] : variant === 1 ? [6, 5, 4, 3, 2, 1, 0] : [3, 2, 4, 1, 5, 0, 6];
   const direction = (index: number) => variant === 1 ? -1 : index % 2 === 0 ? 1 : -1;
-  let completed = false;
+  // Reset the pixel offset GSAP reads from the initial CSS percentage transform.
+  // Otherwise it adds that offset to xPercent and the strips never fully close.
+  gsap.set(pieces, { x: 0, y: 0, xPercent: index => direction(index) * 110 });
   gsap.set(overlay, { autoAlpha: 1 });
-  pieces.forEach((piece, index) => gsap.set(piece, { xPercent: direction(index) * 110 }));
   const timeline = gsap.timeline({ onComplete: () => {
-    completed = true;
     gsap.set(overlay, { autoAlpha: 0 });
     onComplete();
   } });
@@ -32,17 +32,12 @@ export function animatePortraitChange(frame: HTMLElement, outgoing: HTMLElement,
     timeline.to(pieces[index], { xPercent: 0, duration: .54, ease: "power3.inOut" }, rank * .055);
   });
   // All seven overlapping paper strips are fully closed at .87 seconds.
-  timeline.set(outgoing, { autoAlpha: 0 }, .91)
-    .set(incoming, { autoAlpha: 1 }, .91);
+  timeline.call(onCovered, [], .91);
   [...order].reverse().forEach((index, rank) => {
     timeline.to(pieces[index], { xPercent: -direction(index) * 110, duration: .66, ease: "power3.inOut" }, 1.06 + rank * .045);
   });
   return () => {
     timeline.kill();
     gsap.set(overlay, { autoAlpha: 0 });
-    if (!completed) {
-      gsap.set(outgoing, { autoAlpha: 1 });
-      gsap.set(incoming, { autoAlpha: 0 });
-    }
   };
 }
