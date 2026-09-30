@@ -118,6 +118,12 @@ h1, h2, h3, p { margin: 0; }
 @media (min-width: 761px) and (max-aspect-ratio: 5/4) {
   .hero-scene { height: min(100svh, 90vw); max-height: 900px; }
 }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .hero-summary { width: 22%; }
+  .hero-introduction { font-size: 20px; }
+  .hero-description { font-size: 15px; }
+  .hero-personal { margin-top: 24px; font-size: 14px; }
+}
 @media (max-width: 760px) {
   .hero-scene { min-height: 1240px; height: 100svh; max-height: 1400px; }
   .site-header { top: 26px; gap: 25px; }
